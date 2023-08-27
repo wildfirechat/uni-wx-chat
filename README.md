@@ -1,6 +1,9 @@
 # 野火IM 手机Web平台Demo
 支持Android 和 iOS 手机浏览器，支持微信浏览器
 
+## 说明
+本项目，依赖于`web sdk`，默认只能连接官方服务。
+
 ## 开发
 1. 运行```npm install```命令
 2. HBuilderX，运行到浏览器，Chrome
