@@ -18,31 +18,13 @@
         },
         /* 模块配置 */
         "modules" : {
-            "VideoPlayer" : {},
-            "Push" : {},
-            "Record" : {},
-            "Camera" : {}
+            "VideoPlayer" : {}
         },
         /* 应用发布信息 */
         "distribute" : {
             /* android打包配置 */
             "android" : {
-                "permissions" : [
-                    "<uses-feature android:name=\"android.hardware.camera\"/>",
-                    "<uses-feature android:name=\"android.hardware.camera.autofocus\"/>",
-                    "<uses-permission android:name=\"android.permission.ACCESS_NETWORK_STATE\"/>",
-                    "<uses-permission android:name=\"android.permission.ACCESS_WIFI_STATE\"/>",
-                    "<uses-permission android:name=\"android.permission.CAMERA\"/>",
-                    "<uses-permission android:name=\"android.permission.CHANGE_NETWORK_STATE\"/>",
-                    "<uses-permission android:name=\"android.permission.CHANGE_WIFI_STATE\"/>",
-                    "<uses-permission android:name=\"android.permission.FLASHLIGHT\"/>",
-                    "<uses-permission android:name=\"android.permission.READ_PHONE_STATE\"/>",
-                    "<uses-permission android:name=\"android.permission.RECORD_AUDIO\"/>",
-                    "<uses-permission android:name=\"android.permission.VIBRATE\"/>",
-                    "<uses-permission android:name=\"android.permission.WAKE_LOCK\"/>",
-                    "<uses-permission android:name=\"android.permission.WRITE_SETTINGS\"/>"
-                ],
-                "abiFilters" : [ "armeabi-v7a", "arm64-v8a", "x86" ]
+                "autoSdkPermissions" : false
             },
             /* ios打包配置 */
             "ios" : {
@@ -65,36 +47,7 @@
                 }
             }
         },
-        "nativePlugins" : {
-            "wf-uni-wfc-client" : {
-                "__plugin_info__" : {
-                    "name" : "【官方】野火即时通讯IM原生插件",
-                    "description" : "野火官方发布移动端即时通讯插件，包括Android和iOS平台，拥有完善的Demo，支持单人、群组和聊天室会话，支持文字、语音、图片等常见消息，服务器和移动端免费使用，让您一步拥有完美的即时通讯软件。",
-                    "platforms" : "Android,iOS",
-                    "url" : "https://ext.dcloud.net.cn/plugin?id=7895",
-                    "android_package_name" : "cn.wildfirechat.chat.uni",
-                    "ios_bundle_id" : "",
-                    "isCloud" : true,
-                    "bought" : 1,
-                    "pid" : "7895",
-                    "parameters" : {}
-                }
-            },
-            "wf-uni-wfc-uikit" : {
-                "__plugin_info__" : {
-                    "name" : "【官方】野火实时音视频RTC原生插件",
-                    "description" : "野火官方发布的移动端实时音视频插件，包括Android和iOS平台，拥有完善的Demo，服务器和移动端免费使用，支持多人音频和多人视频通话，让您一步拥有完美的即时通讯软件。",
-                    "platforms" : "Android,iOS",
-                    "url" : "https://ext.dcloud.net.cn/plugin?id=9364",
-                    "android_package_name" : "cn.wildfirechat.chat.uni",
-                    "ios_bundle_id" : "cn.wildfirechat.ClientDemo",
-                    "isCloud" : true,
-                    "bought" : 1,
-                    "pid" : "9364",
-                    "parameters" : {}
-                }
-            }
-        }
+        "nativePlugins" : {}
     },
     /* 快应用特有相关 */
     "quickapp" : {},
