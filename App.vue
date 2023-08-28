@@ -34,7 +34,7 @@ export default {
         // #endif
     },
     mounted() {
-        // 必须
+        // 必须，只能调用一次
         avenginekit.setup();
     },
 
