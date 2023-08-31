@@ -293,9 +293,9 @@ export default {
                 case 'shoot':
                     this.chooseVideo();
                     break;
-                case 'file':
-                    this.chooseFile();
-                    break;
+                // case 'file':
+                //     this.chooseFile();
+                //     break;
                 case 'voip_a':
                     this.voip(true);
                     break;

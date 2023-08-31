@@ -13,7 +13,7 @@
             <text>API测试</text>
             <i></i>
         </div>
-        <div class="about" @click="showConferencePortal">
+        <div class="about" style="display: none" @click="showConferencePortal">
             <text>打开会议入口</text>
             <i></i>
         </div>

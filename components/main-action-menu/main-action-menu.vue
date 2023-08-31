@@ -15,7 +15,7 @@
                     </view>
                     <view class="text">添加朋友</view>
                 </view>
-                <view class="menu-item" @click="go2ScanQrCode">
+                <view class="menu-item" style="display: none" @click="go2ScanQrCode">
                     <view class="menu-item-icon">
                         <view class="wxfont qr_code"></view>
                     </view>
@@ -115,7 +115,7 @@ export default {
             this.hide()
         },
         toggle() {
-            if (this.isActive){
+            if (this.isActive) {
                 this.hide();
             } else {
                 this.show();
@@ -128,7 +128,7 @@ export default {
             }, 30)
         },
         hide() {
-            if (this.isActive){
+            if (this.isActive) {
                 this.isActive = false
                 this.hideAnimation()
             }
