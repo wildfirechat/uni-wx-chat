@@ -45,7 +45,7 @@ export default {
     border-bottom: 1px solid lightgrey;
     position: fixed;
     width: 100%;
-    top: 0;
+    top: 44px;
     left: 0;
     background-color: white;
     z-index: 99;
