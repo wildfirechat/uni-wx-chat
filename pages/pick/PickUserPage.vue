@@ -19,7 +19,7 @@
             <header>
                 <span v-if="checkedUsers.length === 0">{{ $t('pick.picked_contact') }}</span>
                 <span v-else>{{ $t('pick.picked_contact') + this.checkedUsers.length }}</span>
-                <button size="mini" @click="confirm"> {{ confirmTitle }}</button>
+                <button size="mini" v-bind:class="{disabled: checkedUsers.length === 0}" :disabled="checkedUsers.length === 0" @click="confirm"> {{ confirmTitle }}</button>
             </header>
             <div class="content" ref="pickedUserContainer">
                 <div class="picked-user" v-for="(user, index) in checkedUsers" :key="index" @click="unpick(user)">
@@ -81,7 +81,7 @@ export default {
         return {
             sharedPickState: store.state.pick,
             filterQuery: '',
-            scrollLeft:0,
+            scrollLeft: 0,
         }
     },
 
@@ -164,8 +164,8 @@ export default {
         }
     },
 
-    watch:{
-        checkedUsers(){
+    watch: {
+        checkedUsers() {
             // uniapp 里面无效，不知道为啥
             this.$nextTick(() => {
                 this.$refs.pickedUserContainer.scrollLeft = this.$refs.pickedUserContainer.scrollWidth;
@@ -183,7 +183,7 @@ export default {
     display: flex;
     flex-direction: column;
     position: relative;
-    height: 100vh;
+    height: calc(100vh - 44px);
     width: 100%;
     overflow: hidden;
 }
@@ -203,6 +203,7 @@ export default {
     display: flex;
     align-items: center;
     width: 100%;
+    padding-top: 10px;
 }
 
 .input-container input {
@@ -276,7 +277,7 @@ export default {
     overflow: scroll;
 }
 
-.checked-contact-list-container .content .picked-user{
+.checked-contact-list-container .content .picked-user {
     display: flex;
     flex-direction: column;
     column-count: 1;
@@ -289,7 +290,7 @@ export default {
     font-size: 12px;
 }
 
-.checked-contact-list-container .content .picked-user .avatar-container{
+.checked-contact-list-container .content .picked-user .avatar-container {
     position: relative;
     height: 65px;
     width: 65px;
@@ -300,6 +301,10 @@ export default {
     height: 45px;
     margin: 10px 10px;
     border-radius: 3px;
+}
+
+.disabled {
+    color: lightgrey !important;
 }
 
 </style>
