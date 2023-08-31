@@ -128,11 +128,11 @@ export default {
 </script>
 <style>
 .page-body {
-    padding: 20 rpx;
+    padding: 20rpx;
 }
 
 .page-section {
-    margin-top: 20 rpx;
+    margin-top: 20rpx;
 }
 
 .auth-code-container {
