@@ -34,7 +34,7 @@ export default {
 <style scoped>
 
 .search-portal-container {
-    height: 100vh;
+    height: calc(100vh - 44px);
     position: relative;
 }
 

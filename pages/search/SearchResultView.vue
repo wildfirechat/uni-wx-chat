@@ -246,8 +246,7 @@ export default {
 <style lang="css" scoped>
 
 .search-result-container {
-    margin-top: 35px;
-    height: calc(100% - 35px);
+    height: 100%;
     /*background-color: red;*/
     background-color: #f3f3f3e5;
 }
