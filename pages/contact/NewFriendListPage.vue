@@ -50,6 +50,7 @@ export default {
 
 .friend-request-list {
     height: var(--page-full-height-without-header);
+    overflow: auto;
 }
 
 </style>

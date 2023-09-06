@@ -26,7 +26,7 @@ export default {
                 contact: true,
                 conversation: true,
                 group: true,
-        }
+            }
         }
     },
     onLoad(option) {
@@ -47,7 +47,8 @@ export default {
 <style scoped>
 
 .search-portal-container {
-    height: calc(100vh - 44px);
+    height: var(--page-full-height-without-header);
+    overflow: auto;
     position: relative;
 }
 
@@ -58,7 +59,7 @@ export default {
     border-bottom: 1px solid lightgrey;
     position: fixed;
     width: 100%;
-    top: 44px;
+    top: var(--uni-page-header-height);
     left: 0;
     background-color: white;
     z-index: 99;

@@ -1,5 +1,5 @@
 <template>
-    <div class="discovery-container">
+    <div class="chatroom-container">
         <div class="item" @click="go2Chatroom(1)">
             <text>野火聊天室1</text>
         </div>
@@ -37,7 +37,7 @@ export default {
 
 <style scoped>
 
-.discovery-container {
+.chatroom-container {
     display: flex;
     flex-direction: column;
     align-items: center;

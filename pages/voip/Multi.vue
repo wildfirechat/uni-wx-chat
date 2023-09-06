@@ -481,7 +481,7 @@ export default {
 
 .voip-multi-container {
     width: 100vw;
-    height: calc(100vh - 44px);
+    height: var(--page-full-height-without-header);
     display: flex;
     flex-direction: column;
     align-items: center;
