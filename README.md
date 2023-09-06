@@ -4,10 +4,9 @@
 
 ## 前置说明
 
-1. 本项目所使用的`Web SDK`是需要付费的，默认只能连接到官方服务
-2. 本项目依赖于专业版 IM-Server
-3. `Web SDK`支持试用，具体请看[试用](https://docs.wildfirechat.cn/trial/)
-4. 替换`Web SDK`后，即可连到自行部署的服务
+1. 本项目所使用的`Web SDK`是需要付费的，且依赖于`专业版 IM-Server`，价格请参考[费用详情](https://docs.wildfirechat.cn/price/)
+2. `Web SDK`和`专业版 IM-Server`都支持试用，具体请参考[试用说明](https://docs.wildfirechat.cn/trial/)
+3. 本项目默认只能连接到官方服务，购买或申请试用之后，替换`Web SDK`，即可连到自行部署的服务
 
 ## 开发
 
