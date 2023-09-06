@@ -1,8 +1,9 @@
 <template>
     <view class="conversation-list" @scroll="onScroll">
-        <view v-if="connectionStatusDesc" style="text-align: center; padding: 5px 0">{{ connectionStatusDesc}}</view>
+        <view v-if="connectionStatusDesc || unread === undefined" style="text-align: center; padding: 5px 0">{{ connectionStatusDesc }}</view>
         <uni-list :border="true" @scroll="onScroll">
             <view
+                class="conversation-item"
                 @click="showConversation(conversationInfo)"
                 v-for="conversationInfo in sharedConversationState.conversationInfoList"
                 :key="conversationInfoKey(conversationInfo)"
@@ -23,6 +24,7 @@ import ConversationItemView from "./ConversationItemView";
 import store from "../../store";
 import wfc from "../../wfc/client/wfc";
 import ConnectionStatus from "../../wfc/client/connectionStatus";
+import {getItem} from "../util/storageHelper";
 
 export default {
     name: 'ConversationListPage',
@@ -40,6 +42,17 @@ export default {
 
     onShow() {
         console.log('conversationList onShow', this.sharedConversationState.conversationInfoList.length)
+        let userId = getItem('userId');
+        if (!userId) {
+            // 被踢等，需要退到登录页面
+            // 本来应当在启动应用，连接状态变化时处理，但可能会切换失败
+            // Waiting to navigate to: /pages/conversationList/ConversationListPage, do not operate continuously: /pages/login/LoginPage.
+            uni.reLaunch(
+                {
+                    url: '/pages/login/LoginPage'
+                }
+            );
+        }
     },
 
     onHide(){
@@ -170,6 +183,28 @@ export default {
                     break;
             }
             return desc;
+        },
+        unread() {
+            let count = 0;
+            this.sharedConversationState.conversationInfoList.forEach(info => {
+                if (info.isSilent) {
+                    return;
+                }
+                let unreadCount = info.unreadCount;
+                count += unreadCount.unread;
+            });
+            // side
+            if (count > 0) {
+                uni.setTabBarBadge({
+                    index: 0,
+                    text: '' + count
+                })
+            } else {
+               uni.removeTabBarBadge({
+                   index: 0
+               })
+            }
+            return count;
         }
     },
 
@@ -182,13 +217,26 @@ export default {
 <style lang="css" scoped>
 
 .conversation-list {
-    height: 100vh;
+    height: var(--page-full-height-without-header-and-tabbar);
     overflow: auto;
     background: #f3f3f3;
 }
 
 .conversation-list .top {
     background-color: #f1f1f1;
+}
+
+.conversation-item {
+    position: relative;
+}
+
+.conversation-item::after {
+    content: ""; /* 使伪元素可见 */
+    position: absolute;
+    left: 65px; /* 偏移量 */
+    right: 0;
+    bottom: 0;
+    border-bottom: 1px solid #f4f4f4; /* 定义边框样式 */
 }
 
 </style>

@@ -184,7 +184,14 @@ export class WfcManager {
      * @returns {[GroupInfo]} 参考{@link GroupInfo}
      */
     getFavGroupList() {
-        return impl.getMyGroupList();
+        let groupInfos = impl.getMyGroupList();
+        groupInfos.map(info => {
+            if (!info.portrait || info.portrait.startsWith(Config.APP_SERVER)) {
+                info.portrait = this.defaultGroupPortrait(info);
+            }
+            return info;
+        })
+        return groupInfos;
     }
 
     /**
@@ -310,7 +317,13 @@ export class WfcManager {
      * @returns {[UserInfo]}
      */
     searchFriends(keyword) {
-        return impl.searchFriends(keyword);
+        let userInfos = impl.searchFriends(keyword);
+        userInfos.forEach((u) => {
+            if (!u.portrait || u.portrait.startsWith(Config.APP_SERVER)) {
+                u.portrait = this.defaultUserPortrait(u)
+            }
+        });
+        return userInfos;
     }
 
     /**
@@ -320,7 +333,14 @@ export class WfcManager {
      * @returns {[GroupSearchResult]}
      */
     searchGroups(keyword) {
-        return impl.searchGroups(keyword);
+        let results = impl.searchGroups(keyword);
+        results.forEach(r => {
+            let info = r.groupInfo;
+                if (!info.portrait || info.portrait.startsWith(Config.APP_SERVER)) {
+                    info.portrait = this.defaultGroupPortrait(info);
+                }
+        })
+        return results;
     }
 
     /**

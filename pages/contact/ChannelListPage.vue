@@ -1,8 +1,10 @@
 <template>
     <div>
-        <div class="group-item" v-for="(group, index) in sharedContactState.favGroupList" :key="index" @click="showGroup(group)">
-            <img class="avatar" :src="group.portrait">
-            <span class="single-line">{{ group.name }}</span>
+        <div v-for="(channel, index) in sharedContactState.channelList" :key="index" @click="showChannel(channel)">
+            <div class="channel-item">
+                <img class="avatar" :src="channel.portrait">
+                <span class="single-line">{{ channel.name }}</span>
+            </div>
         </div>
     </div>
 
@@ -22,8 +24,8 @@ export default {
         }
     },
     methods: {
-        showGroup(group) {
-            let conversation = new Conversation(ConversationType.Group, group.target, 0);
+        showChannel(channelInfo) {
+            let conversation = new Conversation(ConversationType.Channel, channelInfo.channelId, 0);
             store.setCurrentConversation(conversation);
             this.$go2ConversationPage();
         }
@@ -32,13 +34,8 @@ export default {
 </script>
 
 <style scoped>
-.avatar {
-    width: 40px;
-    height: 40px;
-    border-radius: 3px;
-}
 
-.group-item {
+.channel-item {
     height: 50px;
     padding: 5px 10px;
     display: flex;
@@ -46,12 +43,19 @@ export default {
     align-items: center;
 }
 
-.group-item:active {
-    background-color: #d6d6d6;
+
+.channel-item:active {
+    background: #d6d6d6;
 }
 
-.group-item span {
+.channel-item span {
     margin-left: 10px;
+}
+
+.avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 3px;
 }
 
 </style>

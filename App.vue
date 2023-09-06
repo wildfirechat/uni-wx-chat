@@ -68,4 +68,25 @@ export default {
 @import './static/customicons.css';
 @import './assets/fonts/icomoon/style.css';
 
+
+:root {
+    --uni-page-head-height: 44px;
+    --uni-tabbar-height: 50px;
+//app-plus 能自动处理，但 h5 时高度不对，不能自动处理
+
+    /* #ifdef APP-PLUS */
+    --page-full-height-without-header-and-tabbar: 100vh;
+    /* #endif */
+    /* #ifdef H5 */
+    --page-full-height-without-header-and-tabbar: calc(100vh - 44px - 50px);
+    /* #enddef */
+
+    /* #ifdef APP-PLUS */
+    --page-full-height-without-header: 100vh;
+    /* #endif */
+    /* #ifdef H5 */
+    --page-full-height-without-header: calc(100vh - 44px);
+    /* #enddef */
+}
+
 </style>

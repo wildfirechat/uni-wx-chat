@@ -90,6 +90,23 @@
             }
         },
         {
+            "path": "pages/contact/ChannelListPage",
+            "style": {
+                "navigationBarTitleText": " 频道列表",
+                "app-plus": {
+                    "titleNView": {
+                        "buttons": [
+                            {
+                                "text": "\ue657",
+                                "fontSrc": "/static/wx_iconfont.ttf",
+                                "fontSize": "28px"
+                            }
+                        ]
+                    }
+                }
+            }
+        },
+        {
             "path": "pages/search/SearchPortalPage",
             "style": {
                 "navigationBarTitleText": "搜索"
@@ -108,6 +125,12 @@
 			}
 		},
 		{
+            "path": "pages/contact/FriendRequestDetailPage",
+            "style": {
+                "navigationBarTitleText": "好友请求"
+            }
+        },
+        {
 			"path": "pages/contact/ContactListPage",
 			"style": {
 				"navigationBarTitleText": "好友",
@@ -130,6 +153,34 @@
 			}
 		},
         {
+            "path": "pages/contact/NewFriendListPage",
+            "style": {
+                "navigationBarTitleText": "新朋友",
+                "app-plus": {
+                    "titleNView": {
+                        "buttons": [
+                            {
+                                "text": "\ue63f",
+                                "fontSrc": "/static/wx_iconfont.ttf",
+                                "fontSize": "20px"
+                            },
+                            {
+                                "text": "\uE611",
+                                "fontSrc": "/static/wx_iconfont.ttf",
+                                "fontSize": "26px"
+                            }
+                        ]
+                    }
+                }
+            }
+        },
+        {
+            "path": "pages/contact/GroupListPage",
+            "style": {
+                "navigationBarTitleText": "我的群组"
+            }
+        },
+        {
             "path": "pages/pick/PickUserPage",
             "style": {
                 "navigationBarTitleText": "选择联系人"
@@ -142,21 +193,21 @@
             }
         },
         {
+            "path": "pages/discovery/DiscoveryPage",
+            "style": {
+                "navigationBarTitleText": "发现"
+            }
+        },
+        {
+            "path": "pages/discovery/ChatroomListPage",
+            "style": {
+                "navigationBarTitleText": "聊天室列表"
+            }
+        },
+        {
             "path": "pages/me/MePage",
             "style": {
                 "navigationBarTitleText": "我的"
-            }
-        },
-        {
-            "path": "pages/voip/Single",
-            "style": {
-                "navigationBarTitleText": "单人音视频通话"
-            }
-        },
-        {
-            "path": "pages/voip/Multi",
-            "style": {
-                "navigationBarTitleText": " 多人音视频通话"
             }
         },
         {
@@ -184,15 +235,21 @@
 		"list": [
 			{
 				"pagePath": "pages/conversationList/ConversationListPage",
-				"text": "会话列表",
+                "text": "野火",
 				"iconPath": "static/image/tabbar/message_normal.png",
 				"selectedIconPath": "static/image/tabbar/message_press.png"
 			},
 			{
 				"pagePath": "pages/contact/ContactListPage",
-				"text": "好友列表",
+                "text": "通讯录",
 				"iconPath": "static/image/tabbar/contact_normal.png",
 				"selectedIconPath": "static/image/tabbar/contact_press.png"
+            },
+            {
+                "pagePath": "pages/discovery/DiscoveryPage",
+                "text": " 发现",
+                "iconPath": "static/image/tabbar/discovery_normal.png",
+                "selectedIconPath": "static/image/tabbar/discovery_press.png"
 			},
             {
                 "pagePath": "pages/me/MePage",

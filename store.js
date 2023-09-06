@@ -33,6 +33,7 @@ import NullUserInfo from "./wfc/model/nullUserInfo";
 import LeaveChannelChatMessageContent from "./wfc/messages/leaveChannelChatMessageContent";
 import ArticlesMessageContent from "./wfc/messages/articlesMessageContent";
 import EnterChannelChatMessageContent from "./wfc/messages/enterChannelChatMessageContent";
+import NullChannelInfo from "./wfc/model/NullChannelInfo";
 
 /**
  * 一些说明
@@ -106,6 +107,7 @@ let store = {
             friendList: [],
             friendRequestList: [],
             favGroupList: [],
+            channelList: [],
             favContactList: [],
 
             selfUserInfo: null,
@@ -225,6 +227,7 @@ let store = {
             this._loadDefaultConversationList();
             this._loadFavContactList();
             this._loadFavGroupList();
+            this._loadChannelList();
             this._loadCurrentConversationMessages();
         });
 
@@ -259,6 +262,7 @@ let store = {
 
         wfc.eventEmitter.on(EventType.ChannelInfosUpdate, (groupInfos) => {
             this._loadDefaultConversationList();
+            this._loadChannelList();
         });
 
         wfc.eventEmitter.on(EventType.ConversationInfoUpdate, (conversationInfo) => {
@@ -451,6 +455,7 @@ let store = {
     _loadDefaultData() {
         console.log('store.js', '_loadDefaultData');
         this._loadFavGroupList();
+        this._loadChannelList();
         this._loadFriendList();
         this._loadFavContactList();
         this._loadFriendRequest();
@@ -635,10 +640,13 @@ let store = {
         if (!conversationInfo) {
             if (conversationState.currentConversationInfo) {
                 let conversation = conversationState.currentConversationInfo.conversation;
+                if ([ConversationType.Single, ConversationType.Group].indexOf(conversation.type) >= 0) {
                 wfc.unwatchOnlineState(conversation.type, [conversation.target]);
-                if (conversation.type === ConversationType.Channel) {
+                } else if (conversation.type === ConversationType.Channel) {
                     let content = new LeaveChannelChatMessageContent();
                     wfc.sendConversationMessage(conversation, content);
+                } else if (conversation.type === ConversationType.ChatRoom) {
+                    wfc.quitChatroom(conversation.target)
                 }
             }
             conversationState.currentConversationInfo = null;
@@ -672,6 +680,8 @@ let store = {
         if (conversation.type === ConversationType.Channel) {
             let content = new EnterChannelChatMessageContent();
             wfc.sendConversationMessage(conversation, content);
+        } else if (conversation.type === ConversationType.ChatRoom) {
+            wfc.joinChatroom(conversation.target);
         }
         conversationState.currentConversationInfo = conversationInfo;
         conversationState.shouldAutoScrollToBottom = true;
@@ -1030,6 +1040,7 @@ let store = {
                     break;
                 }
             }
+            console.log('_loadCurrentConversationMessages success', conversation, msgs)
         }, err => {
             console.error('_loadCurrentConversationMessages error', err);
         });
@@ -1395,7 +1406,10 @@ let store = {
     _loadChannelList() {
         let channelIds = wfc.getListenedChannels();
         if (channelIds) {
-            contactState.channelList = channelIds.map(channleId => wfc.getChannelInfo(channleId, false));
+            contactState.channelList = channelIds.map(channelId => wfc.getChannelInfo(channelId, false));
+            contactState.channelList = contactState.channelList.filter(ch => {
+                return !(ch instanceof NullChannelInfo)
+            });
         }
     },
     _loadFavContactList() {
@@ -1444,16 +1458,24 @@ let store = {
         contactState.expandFriendList = !contactState.expandFriendList;
     },
 
-    setSearchQuery(query) {
+    setSearchQuery(query, options) {
         searchState.query = query;
         if (query) {
-            console.log('search', query)
-            searchState.contactSearchResult = this.filterContact(query);
-            searchState.groupSearchResult = this.filterGroupConversation(query);
-            searchState.conversationSearchResult = this.searchConversation(query);
+            console.log('search', query, options)
+            if (options.contact) {
+                searchState.contactSearchResult = this.filterContact(query);
+            }
+            if (options.group) {
+                searchState.groupSearchResult = this.filterGroupConversation(query);
+            }
+            if (options.conversation) {
+                searchState.conversationSearchResult = this.searchConversation(query);
+            }
             // searchState.messageSearchResult = this.searchMessage(query);
             // 默认不搜索新用户
-            this.searchUser(query);
+            if (options.user) {
+            	this.searchUser(query);
+            }
 
         } else {
             searchState.contactSearchResult = [];
