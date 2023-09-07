@@ -137,7 +137,7 @@ export default {
             // match:'http.*'
         }, e => {
             console.log('reject url', e.url)
-            if (this.sharedConversationState.enableMessageMultiSelection){
+            if (this.sharedConversationState.enableMessageMultiSelection) {
                 return;
             }
             uni.navigateTo({
@@ -642,15 +642,27 @@ export default {
         },
         onAbort() {
             console.log("onAbort");
-        }
+        },
 
+        scrollToBottom() {
+            // 获取滚动视图的高度
+            uni.createSelectorQuery()
+                .select('.uni-scroll-view')
+                .fields({size: true}, (res) => {
+                    if (res) {
+                        // 滚动到底部，scrollTop 设置为滚动视图高度
+                        this.scrollTop = res.height;
+                    }
+                })
+                .exec();
+        }
     },
 
     mounted() {
         uni.setNavigationBarTitle({
             title: this.targetUserOnlineStateDesc ? this.conversationTitle + `(${this.targetUserOnlineStateDesc})` : this.conversationTitle
         });
-        this.$scrollToBottom();
+        this.scrollToBottom();
         store.clearConversationUnreadStatus(this.conversationInfo.conversation);
 
         this.keyboardHeight = getItem('keyboardHeight');
@@ -682,7 +694,6 @@ export default {
         }
         console.log('conversationView updated', this.sharedConversationState.shouldAutoScrollToBottom)
         if (this.sharedConversationState.shouldAutoScrollToBottom) {
-            // this.$scrollToBottom();
             this.scrollTop = 99998;
         } else {
             // 用户滑动到上面之后，收到新消息，不自动滑动到最下面
@@ -774,6 +785,7 @@ export default {
     height: 100%;
     overflow: auto;
 }
+
 >>> .uni-scroll-view-refresher {
     max-height: 100px; /* 设置下拉刷新区域的最大高度为200像素 */
 }
