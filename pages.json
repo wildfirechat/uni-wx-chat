@@ -1,26 +1,26 @@
 {
-	"pages": [
+    "pages": [
         {
             "path": "pages/SplashPage",
             "style": {
                 "navigationBarTitleText": "",
-				"navigationStyle": "custom",
-				"app-plus": {
-					"animationType": "none",
-					"animationDuration": 100
-				}
+                "navigationStyle": "custom",
+                "app-plus": {
+                    "animationType": "none",
+                    "animationDuration": 100
+                }
             }
         },
-		{
-			"path": "pages/login/LoginPage",
-			"style": {
-				"navigationBarTitleText": "登录"
-			}
-		},
-		{
-			"path": "pages/conversationList/ConversationListPage",
-			"style": {
-				"navigationBarTitleText": "会话列表",
+        {
+            "path": "pages/login/LoginPage",
+            "style": {
+                "navigationBarTitleText": "登录"
+            }
+        },
+        {
+            "path": "pages/conversationList/ConversationListPage",
+            "style": {
+                "navigationBarTitleText": "会话列表",
                 "app-plus": {
                     "titleNView": {
                         "buttons": [
@@ -37,8 +37,8 @@
                         ]
                     }
                 }
-			}
-		},
+            }
+        },
         {
             "path": "pages/conversation/ConversationPage",
             "style": {
@@ -55,7 +55,7 @@
                         ]
                     },
                     "softinputMode": "adjustResize",
-                    "bounce":"none"
+                    "bounce": "none"
                 }
             }
         },
@@ -118,22 +118,22 @@
                 "navigationBarTitleText": " 会话消息搜索"
             }
         },
-		{
-			"path": "pages/contact/UserDetailPage",
-			"style": {
-				"navigationBarTitleText": "用户信息"
-			}
-		},
-		{
+        {
+            "path": "pages/contact/UserDetailPage",
+            "style": {
+                "navigationBarTitleText": "用户信息"
+            }
+        },
+        {
             "path": "pages/contact/FriendRequestDetailPage",
             "style": {
                 "navigationBarTitleText": "好友请求"
             }
         },
         {
-			"path": "pages/contact/ContactListPage",
-			"style": {
-				"navigationBarTitleText": "好友",
+            "path": "pages/contact/ContactListPage",
+            "style": {
+                "navigationBarTitleText": "好友",
                 "app-plus": {
                     "titleNView": {
                         "buttons": [
@@ -150,8 +150,8 @@
                         ]
                     }
                 }
-			}
-		},
+            }
+        },
         {
             "path": "pages/contact/NewFriendListPage",
             "style": {
@@ -211,6 +211,18 @@
             }
         },
         {
+            "path": "pages/voip/Single",
+            "style": {
+                "navigationBarTitleText": "单人音视频通话"
+            }
+        },
+        {
+            "path": "pages/voip/Multi",
+            "style": {
+                "navigationBarTitleText": " 多人音视频通话"
+            }
+        },
+        {
             "path": "pages/misc/WebViewPage",
             "style": {
                 "navigationBarTitleText": "页面加载中..."
@@ -229,42 +241,42 @@
             }
         }
     ],
-	"tabBar": {
-		"selectedColor": "#3B62E0",
-		"color": "#7f8389",
-		"list": [
-			{
-				"pagePath": "pages/conversationList/ConversationListPage",
+    "tabBar": {
+        "selectedColor": "#3B62E0",
+        "color": "#7f8389",
+        "list": [
+            {
+                "pagePath": "pages/conversationList/ConversationListPage",
                 "text": "野火",
-				"iconPath": "static/image/tabbar/message_normal.png",
-				"selectedIconPath": "static/image/tabbar/message_press.png"
-			},
-			{
-				"pagePath": "pages/contact/ContactListPage",
+                "iconPath": "static/image/tabbar/message_normal.png",
+                "selectedIconPath": "static/image/tabbar/message_press.png"
+            },
+            {
+                "pagePath": "pages/contact/ContactListPage",
                 "text": "通讯录",
-				"iconPath": "static/image/tabbar/contact_normal.png",
-				"selectedIconPath": "static/image/tabbar/contact_press.png"
+                "iconPath": "static/image/tabbar/contact_normal.png",
+                "selectedIconPath": "static/image/tabbar/contact_press.png"
             },
             {
                 "pagePath": "pages/discovery/DiscoveryPage",
                 "text": " 发现",
                 "iconPath": "static/image/tabbar/discovery_normal.png",
                 "selectedIconPath": "static/image/tabbar/discovery_press.png"
-			},
+            },
             {
                 "pagePath": "pages/me/MePage",
                 "text": "我的",
                 "iconPath": "static/image/tabbar/me_normal.png",
                 "selectedIconPath": "static/image/tabbar/me_press.png"
             }
-		]
-	},
-	"sitemapLocation": "sitemap.json",
-	"globalStyle": {
-		"backgroundTextStyle": "light",
-		"navigationBarBackgroundColor": "#fff",
-		"navigationBarTitleText": "野火IM",
-		"navigationBarTextStyle": "black"
-	},
-	"subPackages": []
+        ]
+    },
+    "sitemapLocation": "sitemap.json",
+    "globalStyle": {
+        "backgroundTextStyle": "light",
+        "navigationBarBackgroundColor": "#fff",
+        "navigationBarTitleText": "野火IM",
+        "navigationBarTextStyle": "black"
+    },
+    "subPackages": []
 }
