@@ -10,6 +10,7 @@
     <!--                           v-bind:class="{leftarrow:message.direction === 1, rightarrow: message.direction === 0}"/>-->
     <FileMessageContentView :message="message"
                             v-else-if="message.messageContent.type === 5"
+                            :style="{'--out-arrow-color':'white', '--in-arrow-color':'white'}"
                             v-bind:class="{leftarrow:message.direction === 1, rightarrow: message.direction === 0}"/>
     <VideoMessageContentView :message="message"
                              v-else-if="message.messageContent.type === 6"/>
