@@ -77,7 +77,6 @@ import Message from "@/wfc/messages/message";
 import VideoMessageContent from "@/wfc/messages/videoMessageContent";
 import SoundMessageContent from "@/wfc/messages/soundMessageContent";
 import MessageContentType from "@/wfc/messages/messageContentType";
-// import BenzAMRRecorder from "benz-amr-recorder";
 // import axios from "axios";
 import FavItem from "@/wfc/model/favItem";
 import ConversationType from "@/wfc/model/conversationType";
@@ -85,8 +84,9 @@ import GroupMemberType from "@/wfc/model/groupMemberType";
 import CompositeMessageContent from "@/wfc/messages/compositeMessageContent";
 import ConnectionStatus from "../../wfc/client/connectionStatus";
 import {getItem, setItem} from "../util/storageHelper";
+import Config from "../../config";
 
-var amr;
+var innerAudioContext;
 export default {
     name: 'ConversationPage',
     components: {
@@ -438,20 +438,31 @@ export default {
             this.toggleMessageMultiSelectionActionView(message);
         },
 
+        // why？
+        // 用于控制，同时只能播放一个语言，如果是将逻辑放到 AudioMessageContentView 里面，控制起来会更麻烦
         playVoice(message) {
-            if (amr) {
-                amr.stop();
+            if (innerAudioContext) {
+                innerAudioContext.stop();
             }
-            amr = new BenzAMRRecorder();
             let voice = message.messageContent;
-            amr.initWithUrl(voice.remotePath).then(() => {
+
+            let mp3RemotePath = Config.AMR_TO_MP3_SERVER_ADDRESS + voice.remotePath;
+            innerAudioContext = uni.createInnerAudioContext();
+            innerAudioContext.autoplay = false;
+            innerAudioContext.src = mp3RemotePath;
+            innerAudioContext.onPlay(() => {
                 message._isPlaying = true;
-                amr.play();
             });
-            amr.onEnded(() => {
+            innerAudioContext.onError((res) => {
+                message._isPlaying = false;
+                store.playVoice(null)
+            });
+            innerAudioContext.onEnded(() => {
                 message._isPlaying = false;
                 store.playVoice(null)
             })
+            innerAudioContext.play();
+
         },
         mentionMessageSenderTitle(message) {
             if (!message) {
@@ -726,8 +737,9 @@ export default {
             if (voice) {
                 this.playVoice(voice);
             } else {
-                if (amr) {
-                    amr.stop();
+                if (innerAudioContext) {
+                    innerAudioContext.stop();
+                    innerAudioContext = null;
                 }
             }
             return null;
