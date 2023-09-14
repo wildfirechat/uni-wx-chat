@@ -459,9 +459,6 @@ export default {
         },
 
         storeDraft(conversationInfo) {
-            if (!this.text) {
-                return;
-            }
 
             let quotedMessage = this.sharedConversationState.quotedMessage;
             let draftText = this.text.trim();
