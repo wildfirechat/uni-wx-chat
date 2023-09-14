@@ -12,7 +12,6 @@
     "resize-image": "^0.1.0",
     "twemoji": "^14.0.2",
     "universal-emoji-parser": "^0.5.28",
-    "vue-i18n": "^9.1.9",
-    "vue-spinner": "^1.0.4"
+    "vue-i18n": "^9.1.9"
   }
 }
