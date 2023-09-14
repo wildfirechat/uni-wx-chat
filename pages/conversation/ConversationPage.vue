@@ -685,6 +685,8 @@ export default {
         this.$on('openMessageContextMenu', (event, message) => {
             this.showMessageContextMenu(event, message)
         });
+
+        this.scrollTop = 99999;
     },
 
     updated() {
