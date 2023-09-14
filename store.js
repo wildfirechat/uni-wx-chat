@@ -941,6 +941,7 @@ let store = {
         }[mediaType];
 
         let messageContent;
+        console.log('send file', file)
         switch (messageContentmediaType) {
             case MessageContentMediaType.Image:
                 messageContent = new ImageMessageContent(fileOrLocalPath, remotePath);
@@ -1040,7 +1041,7 @@ let store = {
                     break;
                 }
             }
-            console.log('_loadCurrentConversationMessages success', conversation, msgs)
+            console.log('_loadCurrentConversationMessages success', conversation, msgs.length, msgs)
         }, err => {
             console.error('_loadCurrentConversationMessages error', err);
         });
@@ -1080,11 +1081,11 @@ let store = {
             return;
         }
         let conversation = conversationState.currentConversationInfo.conversation;
-        console.log('loadConversationHistoryMessage', conversation, conversationState.currentConversationOldestMessageId, stringValue(conversationState.currentConversationOldestMessageUid));
+        console.log('loadConversationHistoryMessage ', stringValue(conversationState.currentConversationOldestMessageUid), conversation, conversationState.currentConversationOldestMessageId,  conversationState.currentConversationMessageList);
         let loadRemoteHistoryMessageFunc = () => {
-            wfc.loadRemoteConversationMessages(conversation, [], conversationState.currentConversationOldestMessageUid, 20,
+            wfc.loadRemoteConversationMessages(conversation, [], stringValue(conversationState.currentConversationOldestMessageUid), 20,
                 (msgs, hasMore) => {
-                    console.log('loadRemoteConversationMessages response', msgs.length);
+                    console.log('loadRemoteConversationMessages response', conversationState.currentConversationOldestMessageUid, msgs.length);
                     if (msgs.length === 0) {
                         // 拉回来的消息，本地全都有时，会走到这儿
                         if (hasMore) {

@@ -248,8 +248,6 @@ function mergeImages(sources = [], options = {}) {
 }
 
 
-let groupPortraitMap = new Map();
-window.__groupPortraitMap = groupPortraitMap;
 
 async function genGroupPortrait(groupMemberUsers) {
     let groupMemberPortraits = [];

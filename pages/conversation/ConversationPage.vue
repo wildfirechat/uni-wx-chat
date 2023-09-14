@@ -627,7 +627,7 @@ export default {
         },
 
         onPulling(e) {
-            console.log("onpulling", e);
+            // console.log("onpulling", e);
         },
         onRefresh() {
             console.log('onRresh...')

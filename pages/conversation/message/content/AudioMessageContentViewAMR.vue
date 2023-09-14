@@ -1,18 +1,16 @@
 <template>
-    <div ref="container" class="audio-message-container" :style="widthStyle" @click="playVoice">
+    <div ref="container" class="audio-message-container" :style="widthStyle" @click.prevent="playVoice">
         <p v-if="message.direction === 0" class="duration">{{ duration }}"</p>
         <div class="volume-container">
             <i v-show="!message._isPlaying" class="icon-ion-android-volume-up"></i>
-            <ScaleLoader v-show="message._isPlaying" :color="'#d2d2d2'" :height="'15px'" :width="'3px'"/>
+            <i v-show="message._isPlaying" class="icon-ion-pause"></i>
         </div>
-        <!--        <div class="dot"></div>-->
         <p v-if="message.direction === 1" class="duration">{{ duration }}"</p>
     </div>
 </template>
 
 <script>
 import Message from "@/wfc/messages/message";
-import ScaleLoader from 'vue-spinner/src/ScaleLoader'
 import store from "@/store";
 
 export default {
@@ -23,28 +21,31 @@ export default {
             required: true,
         },
 
-        data() {
-            return {}
         },
 
-        widthStyle() {
+    data() {
             return {
-                width: '10px',
+            widthStyle: {
+                width: '100px'
             }
-        },
+        }
     },
     mounted() {
         if (this.duration) {
             let width = Math.ceil(this.duration / 60 * 300);
-            width = width < 70 ? 70 : width;
-			console.log('audo message Content', this.$refs.container);
-            this.$refs.container.style.setProperty('--voice-width', width + 'px')
+            width = width < 100 ? 100 : width;
+            this.widthStyle.width = width + 'px';
+            console.log('audio message Content', width);
         }
     },
     methods: {
         playVoice() {
-            this.$set(this.message, '_isPlaying', true)
-            store.playVoice(this.message)
+            this.$set(this.message, '_isPlaying', !this.message._isPlaying)
+            if (this.message._isPlaying) {
+            	store.playVoice(this.message)
+            } else {
+                store.playVoice(null)
+            }
         },
     },
 
@@ -61,10 +62,11 @@ export default {
             }
             return seconds;
         },
+        playingDesc() {
+            // TODO
+        }
     },
-    components: {
-        ScaleLoader
-    }
+    components: {}
 }
 </script>
 
@@ -73,10 +75,9 @@ export default {
 .audio-message-container {
     margin: 0 10px;
     display: flex;
-    width: 100%;
     align-items: center;
-    --voice-width: 200px;
     justify-content: flex-end;
+    max-width: 250px;
 }
 
 .audio-message-container audio {
@@ -85,9 +86,9 @@ export default {
 }
 
 .volume-container {
+    flex: 1;
     display: flex;
     height: 40px;
-    width: var(--voice-width);
     min-width: 55px;
     background: white;
     border-radius: 5px;

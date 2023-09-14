@@ -90,6 +90,7 @@ export default {
         // 监听openerUsers事件，获取上一页面通过eventChannel传送到当前页面的数据
         eventChannel.on('options', (options) => {
             this.message = options.message;
+
             store._patchMessage(this.message, 0);
             if (this.message.messageContent.remotePath) {
                 this.loadMediaCompositeMessage(this.message);

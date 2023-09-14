@@ -1,37 +1,40 @@
 <template>
-    <TextMessageContentView :message="message"
-                            v-if="message.messageContent.type === 1"
-                            :style="{'--out-arrow-color':'#98ea70', '--in-arrow-color':'white'}"
-                            v-bind:class="{leftarrow:message.direction === 1, rightarrow: message.direction === 0}"/>
-    <AudioMessageContentView :message="message"
-                             v-else-if="message.messageContent.type === 2"/>
-    <ImageMessageContentView :message="message"
-                             v-else-if="message.messageContent.type === 3"/>
-    <!--                           v-bind:class="{leftarrow:message.direction === 1, rightarrow: message.direction === 0}"/>-->
-    <FileMessageContentView :message="message"
-                            v-else-if="message.messageContent.type === 5"
-                            :style="{'--out-arrow-color':'white', '--in-arrow-color':'white'}"
-                            v-bind:class="{leftarrow:message.direction === 1, rightarrow: message.direction === 0}"/>
-    <VideoMessageContentView :message="message"
-                             v-else-if="message.messageContent.type === 6"/>
-    <!--                           v-bind:class="{leftarrow:message.direction === 1, rightarrow: message.direction === 0}"/>-->
-    <StickerMessageContentView :message="message"
-                               v-else-if="message.messageContent.type === 7"/>
-    <CompositeMessageContentView :message="message"
-                                 v-else-if="message.messageContent.type === 11"/>
-    <CallStartMessageContentView :message="message"
-                                 v-else-if="message.messageContent.type === 400"/>
-    <ConferenceInviteMessageContentView :message="message"
-                                        v-else-if="message.messageContent.type === 408"/>
-    <UserCardMessageContentView :message="message"
-                                v-else-if="message.messageContent.type === 10"
+    <!-- 如果不添加一个层级的话，直接子 view 上的 @click不生效，原因未知 -->
+    <div>
+        <TextMessageContentView :message="message"
+                                v-if="message.messageContent.type === 1"
+                                :style="{'--out-arrow-color':'#98ea70', '--in-arrow-color':'white'}"
+                                v-bind:class="{leftarrow:message.direction === 1, rightarrow: message.direction === 0}"/>
+        <AudioMessageContentView :message="message"
+                                 v-else-if="message.messageContent.type === 2"/>
+        <ImageMessageContentView :message="message"
+                                 v-else-if="message.messageContent.type === 3"/>
+        <!--                           v-bind:class="{leftarrow:message.direction === 1, rightarrow: message.direction === 0}"/>-->
+        <FileMessageContentView :message="message"
+                                v-else-if="message.messageContent.type === 5"
                                 :style="{'--out-arrow-color':'white', '--in-arrow-color':'white'}"
                                 v-bind:class="{leftarrow:message.direction === 1, rightarrow: message.direction === 0}"/>
-    <UnsupportMessageContentView :message="message"
-                                 v-else-if="[/* todo un support message types */].indexOf(message.messageContent.type) >= 0"/>
-    <UnknownMessageContentView :message="message"
-                                v-else
-                                v-bind:class="{leftarrow:message.direction === 1, rightarrow: message.direction === 0}"/>
+        <VideoMessageContentView :message="message"
+                                 v-else-if="message.messageContent.type === 6"/>
+        <!--                           v-bind:class="{leftarrow:message.direction === 1, rightarrow: message.direction === 0}"/>-->
+        <StickerMessageContentView :message="message"
+                                   v-else-if="message.messageContent.type === 7"/>
+        <CompositeMessageContentView :message="message"
+                                     v-else-if="message.messageContent.type === 11"/>
+        <CallStartMessageContentView :message="message"
+                                     v-else-if="message.messageContent.type === 400"/>
+        <ConferenceInviteMessageContentView :message="message"
+                                            v-else-if="message.messageContent.type === 408"/>
+        <UserCardMessageContentView :message="message"
+                                    v-else-if="message.messageContent.type === 10"
+                                    :style="{'--out-arrow-color':'white', '--in-arrow-color':'white'}"
+                                    v-bind:class="{leftarrow:message.direction === 1, rightarrow: message.direction === 0}"/>
+        <UnsupportMessageContentView :message="message"
+                                     v-else-if="[/* todo un support message types */].indexOf(message.messageContent.type) >= 0"/>
+        <UnknownMessageContentView :message="message"
+                                   v-else
+                                   v-bind:class="{leftarrow:message.direction === 1, rightarrow: message.direction === 0}"/>
+    </div>
 </template>
 
 <script>

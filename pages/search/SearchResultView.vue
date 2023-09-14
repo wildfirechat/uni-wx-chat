@@ -230,13 +230,16 @@ export default {
         },
 
         conversationMatchDesc(convSearchResult) {
+            // #ifdef APP-PLUS
+            if (convSearchResult.matchMessage) {
+                return convSearchResult.matchMessage.messageContent.digest(convSearchResult.matchMessage);
+            } else {
+                return convSearchResult.matchCount + '条相关聊天记录';
+            }
+            // #endif
+            // #ifdef H5
             return '';
-            // 移动端才支持下面这种搜索结果，web 端返回的是 conversationInfo
-            // if (convSearchResult.matchMessage) {
-            //     return convSearchResult.matchMessage.messageContent.digest(convSearchResult.matchMessage);
-            // } else {
-            //     return convSearchResult.matchCount + '条相关聊天记录';
-            // }
+            // #endif
         },
     },
 
