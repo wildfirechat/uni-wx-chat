@@ -3,7 +3,6 @@
  */
 
 import EventType from "../../client/wfcEvent";
-// import {ipcRenderer, isElectron, PostMessageEventEmitter, remote} from "../../../platform";
 import ConversationType from "../../model/conversationType";
 import MessageContentType from "../../messages/messageContentType";
 import wfc from "../../client/wfc";
@@ -21,9 +20,6 @@ export class AvEngineKitProxy {
     wfc;
     queueEvents = [];
     callWin;
-    // 默认音视频窗口是在新窗口打开，当需要在同一个窗口，通过iframe处理时，请置为true
-    useIframe = false;
-    iframe;
     type;
 
     conference = false;
@@ -68,20 +64,16 @@ export class AvEngineKitProxy {
             this.hasWebcam = DetectRTC.hasWebcam;
             console.log(`detectRTC, isWebRTCSupported: ${DetectRTC.isWebRTCSupported}, hasWebcam: ${DetectRTC.hasWebcam}, hasSpeakers: ${DetectRTC.hasSpeakers}, hasMicrophone: ${DetectRTC.hasMicrophone}`, this.isSupportVoip);
         });
-        this.event = wfc.eventEmitter;
-        this.event.on(EventType.ReceiveMessage, this.onReceiveMessage);
-        this.event.on(EventType.ConferenceEvent, this.onReceiveConferenceEvent);
-        this.event.on(EventType.ConnectionStatusChanged, this.onConnectionStatusChange)
-    }
+        let wfcEvent = wfc.eventEmitter;
+        wfcEvent.on(EventType.ReceiveMessage, this.onReceiveMessage);
+        wfcEvent.on(EventType.ConferenceEvent, this.onReceiveConferenceEvent);
+        wfcEvent.on(EventType.ConnectionStatusChanged, this.onConnectionStatusChange)
 
-    /**
-     * 设置渲染音视频通话界面的iframe
-     *
-     * 仅当 {@link useIframe}配置为 true时生效
-     * @param iframe
-     */
-    setVoipIframe(iframe) {
-        this.iframe = iframe;
+        const EventEmitter = require("events").EventEmitter;
+        this.events = new EventEmitter();
+        this.events.on('voip-message', this.sendVoipListener)
+        this.events.on('conference-request', this.sendConferenceRequestListener);
+        this.events.on('update-call-start-message', this.updateCallStartMessageContentListener)
     }
 
     updateCallStartMessageContentListener = (event, message) => {
@@ -318,9 +310,6 @@ export class AvEngineKitProxy {
     }
 
     listenVoipEvent = (event, listener) => {
-        if (!this.events) {
-            this.events = wfc.eventEmitter;
-        }
         this.events.on(event, listener);
     };
 
@@ -492,24 +481,15 @@ export class AvEngineKitProxy {
     showCallUI(conversation, isConference, options) {
         let type = isConference ? 'conference' : (conversation.type === ConversationType.Single ? 'single' : 'multi');
         this.type = type;
-        let page = isConference ? 'Conference': (conversation.type === ConversationType.Single ? 'Single' : 'Multi');
+        let page = isConference ? 'Conference' : (conversation.type === ConversationType.Single ? 'Single' : 'Multi');
 
         console.log('showCallUI ....', page)
         uni.navigateTo({
             url: `/pages/voip/${page}`,
+            success: () => {
+                this.emitToVoip(options.event, options.args);
+            }
         })
-
-        if (!this.events) {
-            this.events = wfc.eventEmitter;
-        }
-        console.log('windowEmitter subscribe events');
-        this.events.on('voip-message', this.sendVoipListener)
-        this.events.on('conference-request', this.sendConferenceRequestListener);
-        this.events.on('update-call-start-message', this.updateCallStartMessageContentListener)
-        if (this.useIframe) {
-            this.events.on('close-iframe-window', this.onVoipWindowClose)
-        }
-        this.emitToVoip(options.event, options.args);
     }
 
     onVoipWindowClose = () => {
@@ -518,23 +498,17 @@ export class AvEngineKitProxy {
         if (!this.callWin) {
             return;
         }
-        setTimeout(() => {
-            this.onVoipCallStatusCallback && this.onVoipCallStatusCallback(this.conversation, false);
-            this.conversation = null;
-            this.queueEvents = [];
-            if (this.conference) {
-                wfc.quitChatroom(this.callId);
-                this.conference = false;
-            }
-            this.callId = null;
-            this.participants = [];
-            this.queueEvents = [];
-            this.callWin = null;
-            if (this.iframe) {
-                this.iframe.src = 'about:blank'
-            }
-            this.voipEventRemoveAllListeners('voip-message', 'conference-request', 'update-call-start-message', 'start-screen-share');
-        }, 2000);
+        this.onVoipCallStatusCallback && this.onVoipCallStatusCallback(this.conversation, false);
+        this.conversation = null;
+        this.queueEvents = [];
+        if (this.conference) {
+            wfc.quitChatroom(this.callId);
+            this.conference = false;
+        }
+        this.callId = null;
+        this.participants = [];
+        this.queueEvents = [];
+        this.callWin = null;
     }
 
     onVoipWindowReady(win) {
