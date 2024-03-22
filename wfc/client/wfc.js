@@ -45,7 +45,7 @@ export class WfcManager {
     init(args = []) {
         console.log('wfc init');
         impl.init(args);
-        // avenginekit.setup(self);
+        avenginekit.setup(self);
         //self.setProxyInfo("", "192.168.1.80", 1080, "", "");
 		console.log('wfc init end')
     }

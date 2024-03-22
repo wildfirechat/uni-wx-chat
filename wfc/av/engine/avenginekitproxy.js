@@ -13,6 +13,7 @@ import {longValue, numberValue} from '../../util/longUtil'
 import Conversation from "../../../wfc/model/conversation";
 import CallEndReason from "./callEndReason";
 import CallByeMessageContent from "../messages/callByeMessageContent";
+import EventEmitter from 'events'
 
 // main window renderer process -> voip window renderer process
 // voip window renderer process -> main process -> main window renderer process
@@ -69,7 +70,6 @@ export class AvEngineKitProxy {
         wfcEvent.on(EventType.ConferenceEvent, this.onReceiveConferenceEvent);
         wfcEvent.on(EventType.ConnectionStatusChanged, this.onConnectionStatusChange)
 
-        const EventEmitter = require("events").EventEmitter;
         this.events = new EventEmitter();
         this.events.on('voip-message', this.sendVoipListener)
         this.events.on('conference-request', this.sendConferenceRequestListener);
@@ -327,11 +327,11 @@ export class AvEngineKitProxy {
             return;
         }
         console.log(`startCall speaker、microphone、webcam检测结果分别为：${this.hasSpeaker} , ${this.hasMicrophone}, ${this.hasWebcam}，如果不全为true，请检查硬件设备是否正常，否则通话可能存在异常`)
-        if (!this.isSupportVoip || !this.hasSpeaker || !this.hasMicrophone) {
-            console.log('not support voip', this.isSupportVoip, this.hasSpeaker, this.hasMicrophone, this.hasWebcam);
-            this.onVoipCallErrorCallback && this.onVoipCallErrorCallback(-2);
-            return;
-        }
+        // if (!this.isSupportVoip || !this.hasSpeaker || !this.hasMicrophone) {
+        //     console.log('not support voip', this.isSupportVoip, this.hasSpeaker, this.hasMicrophone, this.hasWebcam);
+        //     this.onVoipCallErrorCallback && this.onVoipCallErrorCallback(-2);
+        //     return;
+        // }
 
         let selfUserInfo = wfc.getUserInfo(wfc.getUserId());
         participants = participants.filter(uid => uid !== selfUserInfo.uid);

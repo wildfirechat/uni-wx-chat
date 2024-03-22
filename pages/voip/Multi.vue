@@ -20,7 +20,6 @@
                             <img class="avatar" :src="selfUserInfo.portrait">
                             <video v-if="audioOnly && selfUserInfo._stream"
                                    class="hidden-video"
-                                   id="localVideo"
                                    :srcObject.prop="selfUserInfo._stream"
                                    muted
                                    webkit-playsinline playsinline x5-playsinline preload="auto"
@@ -30,7 +29,6 @@
                         <video v-else
                                class="video me"
                                ref="localVideo"
-                               id="localVideo"
                                :srcObject.prop="selfUserInfo._stream"
                                muted
                                webkit-playsinline playsinline x5-playsinline preload="auto"
@@ -45,14 +43,12 @@
                             <img class="avatar" :src="participant.portrait" :alt="participant">
                             <video v-if="audioOnly && participant._stream"
                                    class="hidden-video"
-                                   :id="'remoteVideo-' + participant.uid"
                                    :srcObject.prop="participant._stream"
                                    webkit-playsinline playsinline x5-playsinline preload="auto"
                                    autoPlay/>
                             <p class="single-line">{{ userName(participant) }}</p>
                         </div>
                         <video v-else
-                               :id="'remoteVideo-' + participant.uid"
                                class="video"
                                @click="switchVideoType(participant.uid, participant._isScreenSharing)"
                                :srcObject.prop="participant._stream"
@@ -104,7 +100,7 @@
                             <img v-else @click="mute" class="action-img" src='@/assets/images/av_mute_hover.png'/>
                             <p>静音</p>
                         </div>
-                        <div class="action">
+                        <div v-if="!session.audioOnly" class="action">
                             <img v-if="!session.videoMuted" @click="muteVideo" class="action-img"
                                  src='@/assets/images/av_conference_video.png'/>
                             <img v-else @click="muteVideo" class="action-img"
@@ -156,26 +152,6 @@ export default {
             if (!this.autoPlayInterval) {
                 this.autoPlayInterval = setInterval(() => {
                     try {
-                        // setup srcObject
-                        let el = this.$el.querySelector('#localVideo');
-                        if (el) {
-                            let video = el.querySelector('.uni-video-video')
-                            if (!video.srcObject) {
-                                video.srcObject = this.selfUserInfo._stream;
-                                video.src = null;
-                            }
-                        }
-                        this.participantUserInfos.forEach(info => {
-                            let el = this.$el.querySelector(`#remoteVideo-${info.uid}`);
-                            if (el) {
-                                let video = el.querySelector('.uni-video-video')
-                                if (!video.srcObject) {
-                                    video.srcObject = info._stream;
-                                    video.src = null;
-                                }
-                            }
-                        })
-
                         let videos = document.getElementsByTagName('video');
                         let allPlaying = true;
                         for (const video of videos) {
@@ -194,7 +170,12 @@ export default {
 
                         for (const video of videos) {
                             if (video.paused) {
-                                video.play();
+                                let p = video.play();
+                                if (p !== undefined) {
+                                    p.catch(err => {
+                                        // do nothing
+                                    })
+                                }
                             }
                         }
                     } catch (e) {
@@ -306,13 +287,16 @@ export default {
             }
 
             sessionCallback.didVideoMuted = (userId, muted) => {
-                this.participantUserInfos.forEach(u => {
-                    if (u.uid === userId) {
-                        let client = this.session.getSubscriber(userId);
-                        u._isVideoMuted = client.videoMuted;
-                        console.log('didMuteStateChanged', client.videoMuted, client.audioMuted)
-                    }
-                })
+                console.log('didVideoMuted', userId, muted)
+                if (userId === this.selfUserInfo.uid) {
+                    this.selfUserInfo._isVideoMuted = muted;
+                } else {
+                    this.participantUserInfos.forEach(u => {
+                        if (u.uid === userId) {
+                            u._isVideoMuted = muted;
+                        }
+                    })
+                }
             };
 
             sessionCallback.didMediaLostPacket = (media, lostPacket) => {
@@ -455,18 +439,20 @@ export default {
     },
 
     mounted() {
+        avenginekit.setup();
         this.setupSessionCallback();
+
         this.$nextTick(() => {
             avenginekitproxy.onVoipWindowReady(this);
         })
     },
 
-    beforeDestroy() {
+    beforeUnmount() {
         this.isActive = false;
         avenginekitproxy.onVoipWindowClose()
     },
 
-    destroyed() {
+    unmounted() {
         // reset
         this.$set(this.selfUserInfo, '_stream', null)
         this.groupMemberUserInfos.forEach(m => this.$set(m, "_stream", null))

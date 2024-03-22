@@ -32,7 +32,7 @@ export default {
 
     methods: {
         showConferenceInfo() {
-            if (avengineKit.isSupportConference()) {
+            if (avengineKit.startConference) {
                 let cmc = this.message.messageContent;
                 this.$navigateToPage('/pages/voip/conference/ConferenceInfoPage', {
                     conferenceId: cmc.callId,

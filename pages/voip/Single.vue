@@ -46,7 +46,6 @@
                     <div class="local-media-container">
                         <video v-if="status === 4 || localStream"
                                ref="localVideo"
-                               :id="'localVideo'"
                                class="localVideo me"
                                :srcObject.prop="localStream"
                                muted
@@ -57,7 +56,6 @@
                     <div class="remote-media-container">
                         <video v-if="status ===4"
                                @click="switchVideoType()"
-                               :id="'remoteVideo'"
                                ref="remoteVideo"
                                class="video"
                                :srcObject.prop="remoteStream"
@@ -149,34 +147,30 @@ export default {
             console.log('can play');
             if (!this.autoPlayInterval) {
                 this.autoPlayInterval = setInterval(() => {
-                    let localVideo;
-                    let remoteVideo;
                     try {
-                        if (this.$refs.localVideo && this.localStream){
-                            let video = this.$el.querySelector('#localVideo').querySelector('.uni-video-video')
-                            if (!video.srcObject){
-                                video.srcObject = this.localStream;
+                        if (this.$refs.localVideo && this.$refs.localVideo.paused) {
+                            let p = this.$refs.localVideo.play();
+                            if (p !== undefined) {
+                                p.catch(err => {
+                                    // do nothing
+                                })
                             }
-                            if (video.paused){
-                                video.play();
-                            }
-                            localVideo = video;
+                            console.log('can play local');
                         }
-                        if (this.$refs.remoteVideo && this.remoteStream){
-                            let video = this.$el.querySelector('#remoteVideo').querySelector('.uni-video-video')
-                            if (!video.srcObject){
-                                video.srcObject = this.remoteStream;
+                        if (this.$refs.remoteVideo && this.$refs.remoteVideo.paused) {
+                            let p = this.$refs.remoteVideo.play();
+                            if (p !== undefined) {
+                                p.catch(err => {
+                                    // do nothing
+                                })
                             }
-                            if (video.paused){
-                                video.play();
-                            }
-                            remoteVideo = video;
+                            console.log('can play remote');
                         }
                     } catch (e) {
                         // do nothing
                     }
 
-                    if (localVideo && !localVideo.paused && remoteVideo && !remoteVideo.paused) {
+                    if (this.$refs.localVideo && !this.$refs.localVideo.paused && this.$refs.remoteVideo && !this.$refs.remoteVideo.paused) {
                         clearInterval(this.autoPlayInterval);
                         this.autoPlayInterval = 0;
                     }
@@ -227,6 +221,7 @@ export default {
             };
 
             sessionCallback.onInitial = (session, selfUserInfo, initiatorUserInfo, participantUserInfos) => {
+                console.log('onInitial')
                 this.session = session;
                 this.audioOnly = session.audioOnly;
                 this.participantUserInfos = [...participantUserInfos];
@@ -346,6 +341,7 @@ export default {
     },
 
     mounted() {
+        avenginekit.setup();
         this.setupSessionCallback();
 
         this.$nextTick(() => {
@@ -353,7 +349,7 @@ export default {
         })
     },
 
-    beforeDestroy() {
+    beforeUnmount() {
         this.isActive = false;
         avenginekitproxy.onVoipWindowClose()
     },
