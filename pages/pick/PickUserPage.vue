@@ -45,40 +45,15 @@ import CheckableUserListView from "@/pages/user/CheckableUserListView";
 
 export default {
     name: "PickUserPage",
-    props: {
-        users: {
-            type: Array,
-            required: false,
-        },
-        initialCheckedUsers: {
-            type: Array,
-            required: false,
-            default: null,
-        },
-        uncheckableUsers: {
-            type: Array,
-            required: false,
-            default: null,
-        },
-        title: {
-            type: String,
-            required: false,
-            default: '',
-        },
-        confirmTitle: {
-            type: String,
-            required: false,
-            default: 'confirm',
-        },
-        showCategoryLabel: {
-            type: Boolean,
-            required: false,
-            default: true,
-        }
-
-    },
+    props: {},
     data() {
         return {
+            users: null,
+            initialCheckedUsers: null,
+            uncheckableUsers: null,
+            title: null,
+            confirmTitle: null,
+            showCategoryLabel: null,
             sharedPickState: store.state.pick,
             filterQuery: '',
             scrollLeft: 0,
