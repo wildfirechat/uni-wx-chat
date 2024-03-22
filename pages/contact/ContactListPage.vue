@@ -23,6 +23,7 @@
                         <span class="desc">{{ sharedContactState.channelList.length }}</span>
                     </div>
                 </div>
+                <OrganizationListView/>
                 <UserListView :enable-pick="false"
                               :users="sharedContactState.favContactList.concat(sharedContactState.friendList)"
                               :click-user-item-func="setCurrentUser"
@@ -37,10 +38,11 @@
 import store from "../../store";
 import UserListView from "../user/UserListView.vue";
 import UniList from "../../components/uni-list/uni-list.vue";
+import OrganizationListView from "./OrganizationListView.vue";
 
 export default {
     name: "ContactListPage",
-    components: {UniList, UserListView},
+    components: {OrganizationListView, UniList, UserListView},
     data() {
         return {
             sharedContactState: store.state.contact,
@@ -136,14 +138,12 @@ export default {
 .category-item-container {
     height: 50px;
     display: flex;
+    flex-direction: row;
     align-items: center;
     z-index: 1000;
     padding-left: 10px;
     color: #262626;
     font-size: 14px;
-    /* #ifndef APP-PLUS-NVUE */
-    position: -webkit-sticky;
-    /* #endif */
     position: sticky;
     background-color: #fafafa;
 }

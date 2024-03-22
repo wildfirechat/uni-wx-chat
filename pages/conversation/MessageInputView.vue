@@ -3,8 +3,12 @@
         <view class="wf-message-input-container">
             <view class="wf-message-input-toolbar">
                 <view class="wf-input-button-icon wxfont" @click="toggleVoice" :class="showVoice ? 'keyboard' : 'voice'"></view>
+                <view class="wf-input-button-icon wxfont" v-if="isPttEnable" @click="togglePtt" :class="showPtt ? 'keyboard' : 'voice_playing'"></view>
                 <view class="wf-input-voice-container" v-if="showVoice">
                     <AudioInputView :conversation-info="conversationInfo"></AudioInputView>
+                </view>
+                <view class="wf-input-voice-container" v-else-if="showPtt">
+                    <PttAudioInputView :conversation-info="conversationInfo"></PttAudioInputView>
                 </view>
                 <view v-else style="width: 100%">
                     <view class="wf-input-text-container">
@@ -29,12 +33,6 @@
                     <view class="wf-ext-item-text">{{ v.title }}</view>
                 </view>
             </view>
-            <!--            <scroll-view :scroll-y="true" v-if="showEmoji" class="wf-emoji-container">-->
-            <!--                <view class="wf-emoji-content">-->
-            <!--                    <view class="emoji-item" @click="onClickEmoji(v)" v-for="(v,i) in emojiList" :key="i">{{ v }}</view>-->
-
-            <!--                </view>-->
-            <!--            </scroll-view>-->
             <view v-if="showEmoji" class="wf-stickers-container" :style="'height: ' + keyboardHeight + 'px'">
                 <view class="category-container">
                     <view class="category" v-for="(v, i) in emojiStickerList" :key="i" @click="onCategoryClick(i)">
@@ -62,19 +60,22 @@ import ConversationInfo from "../../wfc/model/conversationInfo";
 import wfc from "../../wfc/client/wfc";
 import store from "../../store";
 import ConversationType from "../../wfc/model/conversationType";
-import wfcUIKit from "../../wfc/uikit/wfcUIKit";
 import emojiStickerConfig from "./emojiStickerConfig";
 import StickerMessageContent from "../../wfc/messages/stickerMessageContent";
 import Config from "../../config";
 import QuoteInfo from "../../wfc/model/quoteInfo";
 import AudioInputView from "./message/AudioInputView.vue";
+import PttAudioInputView from "./message/PttAudioInputView.vue";
 import Draft from "../util/draft";
-import Mention from "../../wfc/model/mention";
+import pttClient from "../../wfc/ptt/pttClient";
 import avenginekitproxy from "../../wfc/av/engine/avenginekitproxy";
 
 export default {
     name: "MessageInputView",
-    components: {AudioInputView},
+    components: {
+        AudioInputView,
+        PttAudioInputView
+    },
     props: {
         conversationInfo: {
             type: ConversationInfo,
@@ -89,6 +90,8 @@ export default {
             hideSendButton: Config.getWFCPlatform() === 1 || Config.getWFCPlatform() === 8,
             showRecorder: false,
             showVoice: false,
+            showPtt: false,
+            isPttEnable: pttClient.isPttClientEnable(),
             extList: [
                 {
                     title: '相册',
@@ -107,7 +110,7 @@ export default {
                 },
                 {
                     title: '拍摄',
-                    tag: 'shoot',
+                    tag: 'shot',
                     icon: 'camera'
                 },
                 {
@@ -154,7 +157,7 @@ export default {
         this.restoreDraft();
     },
 
-    beforeDestroy() {
+    beforeUnmount() {
         this.storeDraft(this.conversationInfo)
     },
 
@@ -168,7 +171,6 @@ export default {
             const cursor = event.detail.cursor;
             if (this.conversationInfo.conversation.type === ConversationType.Group) {
                 if (inserting) {
-                    console.log('ooo', inserting, this.text.charAt(cursor - 1));
                     if (inserting && this.text.length > 0 && this.text.charAt(cursor - 1) === '@') {
                         const onPickUser = user => {
                             this.text = this.text.substring(0, cursor - 1) + `@${user.displayName} ` + this.text.substring(cursor);
@@ -241,16 +243,6 @@ export default {
             }
         },
 
-        startRecord() {
-
-            this.$refs['recorder'].startRecord();
-            this.sharedMiscState.isRecording = true;
-        },
-
-        endRecord() {
-            this.$refs['recorder'].stopRecord();
-            this.sharedMiscState.isRecording = false;
-        },
 
         minimizeMessageInputView() {
             this.showEmoji = false;
@@ -267,6 +259,14 @@ export default {
 
         toggleVoice() {
             this.showVoice = !this.showVoice;
+            this.showPtt = false;
+            this.showEmoji = false;
+            this.showExt = false;
+        },
+
+        togglePtt() {
+            this.showPtt = !this.showPtt;
+            this.showVoice = false;
             this.showEmoji = false;
             this.showExt = false;
         },
@@ -276,12 +276,14 @@ export default {
             this.showEmoji = !this.showEmoji;
             this.showExt = false;
             this.showVoice = false;
+            this.showPtt = false;
 
         },
         toggleExt() {
             this.showExt = !this.showExt;
             this.showEmoji = false;
             this.showVoice = false;
+            this.showPtt = false;
         },
 
         onClickExt(ext) {
@@ -290,7 +292,7 @@ export default {
                 case 'image':
                     this.chooseImage();
                     break;
-                case 'shoot':
+                case 'shot':
                     this.chooseVideo();
                     break;
                 // case 'file':

@@ -7,8 +7,7 @@
                 <div class="avatar-container">
                     <checkbox id="checkbox" v-if="sharedConversationState.enableMessageMultiSelection" type="checkbox"
                               :value="message"
-                              :checked="isMessageChecked"
-                              v-model="sharedPickState.messages"/>
+                              :checked="isMessageChecked"/>
                     <img
                         @click="onClickUserPortrait(message.from)"
                         class="avatar"
@@ -74,7 +73,7 @@ export default {
             })
         },
         openMessageContextMenu(event, message) {
-            this.$parent.$emit('openMessageContextMenu', event, message)
+            this.$eventBus.$emit('openMessageContextMenu', [event, message])
             this.highLight = true;
         },
     },

@@ -30,5 +30,6 @@
             "mode" : "hash"
         },
         "template" : "template.h5.html"
-    }
+    },
+    "vueVersion" : "3"
 }

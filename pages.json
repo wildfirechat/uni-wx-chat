@@ -14,7 +14,7 @@
         {
             "path": "pages/login/LoginPage",
             "style": {
-                "navigationBarTitleText": "登录"
+                "navigationBarTitleText": "野火IM"
             }
         },
         {
@@ -88,6 +88,12 @@
             "path": "pages/contact/SearchUserPage",
             "style": {
                 "navigationBarTitleText": "搜索用户"
+            }
+        },
+        {
+            "path": "pages/contact/OrganizationTreePage",
+            "style": {
+                "navigationBarTitleText": "组织结构"
             }
         },
         {
@@ -212,18 +218,6 @@
             }
         },
         {
-            "path": "pages/voip/Single",
-            "style": {
-                "navigationBarTitleText": "单人音视频通话"
-            }
-        },
-        {
-            "path": "pages/voip/Multi",
-            "style": {
-                "navigationBarTitleText": " 多人音视频通话"
-            }
-        },
-        {
             "path": "pages/misc/WebViewPage",
             "style": {
                 "navigationBarTitleText": "页面加载中..."
@@ -233,6 +227,66 @@
             "path": "pages/misc/PreviewVideoPage",
             "style": {
                 "navigationBarTitleText": "视频预览"
+            }
+        },
+        {
+            "path": "pages/voip/Single",
+            "style": {
+                "titleNView": false,
+                "navigationBarTitleText": "单人音视频通话",
+                "navigationBarTextStyle": "white"
+            }
+        },
+        {
+            "path": "pages/voip/Multi",
+            "style": {
+                "titleNView": false,
+                "navigationBarTitleText": "多人音视频通话",
+                "navigationBarTextStyle": "white"
+            }
+        },
+        {
+            "path": "pages/voip/conference/ConferencePortalPage",
+            "style": {
+                "navigationBarTitleText": "会议"
+            }
+        },
+        {
+            "path": "pages/voip/conference/JoinConferencePage",
+            "style": {
+                "navigationBarTitleText": " 加入会议"
+            }
+        },
+        {
+            "path": "pages/voip/conference/CreateConferencePage",
+            "style": {
+                "navigationBarTitleText": "发起会议"
+            }
+        },
+        {
+            "path": "pages/voip/conference/OrderConferencePage",
+            "style": {
+                "navigationBarTitleText": "预定会议"
+            }
+        },
+        {
+            "path": "pages/voip/conference/ConferenceInfoPage",
+            "style": {
+                "navigationBarTitleText": "会议详情"
+            }
+        },
+        {
+            "path": "pages/voip/conference/ConferencePage",
+            "style": {
+                "titleNView": false,
+                "navigationBarTitleText": "音视频会议",
+                "navigationBarTextStyle": "white"
+            }
+        },
+        {
+            "path": "pages/voip/conference/ConferenceManagePage",
+            "style": {
+                "navigationBarTitleText": "会议管理"
             }
         },
         {
@@ -270,7 +324,8 @@
                 "iconPath": "static/image/tabbar/me_normal.png",
                 "selectedIconPath": "static/image/tabbar/me_press.png"
             }
-        ]
+        ],
+        "backgroundColor": "white"
     },
     "sitemapLocation": "sitemap.json",
     "globalStyle": {

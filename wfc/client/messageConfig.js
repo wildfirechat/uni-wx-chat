@@ -66,6 +66,10 @@ import ArticlesMessageContent from "../messages/articlesMessageContent";
 import ChannelMenuEventMessageContent from "../messages/channelMenuEventMessageContent";
 import EnterChannelChatMessageContent from "../messages/enterChannelChatMessageContent";
 import LeaveChannelChatMessageContent from "../messages/leaveChannelChatMessageContent";
+import ConferenceCommandMessageContent from "../av/messages/conferenceCommandMessageContent";
+
+import StreamingTextGeneratingMessageContent from "../messages/streamingTextGeneratingMessageContent";
+import StreamingTextGeneratedMessageContent from "../messages/streamingTextGeneratedMessageContent";
 
 export default class MessageConfig {
     static getMessageContentClazz(type) {
@@ -349,6 +353,18 @@ export default class MessageConfig {
             contentClazz: DeleteMessageContent,
         },
         {
+            name: 'streamingTextGenerating',
+            flag: PersistFlag.Transparent,
+            type: MessageContentType.Streaming_Text_Generating,
+            contentClazz: StreamingTextGeneratingMessageContent,
+        },
+        {
+            name: 'streamingTextGenerated',
+            flag: PersistFlag.Persist_And_Count,
+            type: MessageContentType.Streaming_Text_Generated,
+            contentClazz: StreamingTextGeneratedMessageContent,
+        },
+        {
             name: 'callStartMessageContent',
             flag: PersistFlag.Persist,
             type: MessageContentType.VOIP_CONTENT_TYPE_START,
@@ -473,6 +489,12 @@ export default class MessageConfig {
             flag: PersistFlag.Transparent,
             type: MessageContentType.Leave_Channel_Chat,
             contentClazz: LeaveChannelChatMessageContent,
+        },
+        {
+            name: 'conferenceCommandMessageContent',
+            flag: PersistFlag.Transparent,
+            type: MessageContentType.CONFERENCE_CONTENT_TYPE_COMMAND,
+            contentClazz: ConferenceCommandMessageContent,
         }
     ];
 }

@@ -5,8 +5,14 @@
                                 v-if="message.messageContent.type === 1"
                                 :style="{'--out-arrow-color':'#98ea70', '--in-arrow-color':'white'}"
                                 v-bind:class="{leftarrow:message.direction === 1, rightarrow: message.direction === 0}"/>
+        <StreamingTextMessageContentView :message="message"
+                                         v-else-if="message.messageContent.type === 14 || message.messageContent.type === 15"
+                                         :style="{'--out-arrow-color':'#98ea70', '--in-arrow-color':'white'}"
+                                         v-bind:class="{leftarrow:message.direction === 1, rightarrow: message.direction === 0}"/>
         <AudioMessageContentView :message="message"
                                  v-else-if="message.messageContent.type === 2"/>
+        <AudioMessageContentView :message="message"
+                                 v-else-if="message.messageContent.type === 23"/>
         <ImageMessageContentView :message="message"
                                  v-else-if="message.messageContent.type === 3"/>
         <!--                           v-bind:class="{leftarrow:message.direction === 1, rightarrow: message.direction === 0}"/>-->
@@ -56,6 +62,7 @@ import CompositeMessageContentView from "@/pages/conversation/message/content/Co
 import UserCardMessageContentView from "./content/UserCardMessageContentView";
 import ConferenceInviteMessageContentView from "./content/ConferenceInviteMessageContentView";
 import UnknownMessageContentView from "./content/UnknownMessageContentView";
+import StreamingTextMessageContentView from "./content/StreamingTextMessageContentView.vue";
 
 export default {
     name: "MessageContentContainerView",
@@ -66,6 +73,7 @@ export default {
         }
     },
     components: {
+        StreamingTextMessageContentView,
         UnknownMessageContentView,
         ConferenceInviteMessageContentView,
         CompositeMessageContentView,

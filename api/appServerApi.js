@@ -4,7 +4,6 @@ import {stringValue} from "../wfc/util/longUtil";
 import AppServerError from "./appServerError";
 import wfc from "../wfc/client/wfc";
 import {getItem, setItem} from "../pages/util/storageHelper";
-import wfcUIKit from "../wfc/uikit/wfcUIKit";
 
 export class AppServerApi {
     constructor() {

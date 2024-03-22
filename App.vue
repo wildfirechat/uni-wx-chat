@@ -2,11 +2,24 @@
 import store from "./store";
 import {getItem} from "./pages/util/storageHelper";
 import wfc from "./wfc/client/wfc";
-import avenginekit from "./wfc/av/internal/engine.min";
+import conferenceManager from "./pages/voip/conference/conferenceManager";
+import ConferenceInviteMessageContent from "./wfc/av/messages/conferenceInviteMessageContent";
+import Message from "./wfc/messages/message";
+import ForwardType from "./pages/conversation/message/forward/ForwardType";
 
 export default {
+    data() {
+        return {
+            wfc: null,
+            store: null,
+            conferenceManager: null,
+        }
+    },
     onLaunch: function () {
         console.log("App Launch");
+        this.wfc = wfc;
+        this.store = store;
+        this.conferenceManager = conferenceManager;
         // #ifdef APP-PLUS
         plus.push.getClientInfoAsync((info) => {
             let cid = info["clientid"];
@@ -33,10 +46,6 @@ export default {
         }
         // #endif
     },
-    mounted() {
-        // 必须，只能调用一次
-        avenginekit.setup();
-    },
 
     onHide: function () {
         console.log("App Hide");
@@ -56,23 +65,35 @@ export default {
                     console.log('switch tab complete')
                 }
             });
-        }
+        },
+
+        forwardConferenceInviteMessage(callId, host, title, desc, startTime, audioOnly, defaultAudience, advance, pin) {
+            let inviteMessageContent = new ConferenceInviteMessageContent(callId, host, title, desc, startTime, audioOnly, defaultAudience, advance, pin);
+            console.log('invite', inviteMessageContent);
+            let message = new Message(null, inviteMessageContent);
+            this.$forward({
+                forwardType: ForwardType.NORMAL,
+                messages: [message]
+            });
+        },
     }
 }
 </script>
 
-<style>
+<style lang="css">
 /*每个页面公共css */
 @import './global.css';
 @import './wfc.css';
+/* #ifndef APP-NVUE */
 @import './static/iconfonts/customicons.css';
 @import './static/iconfonts/icomoon/style.css';
+/* #endif */
 
 
 :root {
     --uni-tabbar-height: 50px;
 
-//app-plus header 和 tabbar 是原生的
+    /*app-plus header 和 tabbar 是原生的*/
 
     /* #ifdef APP-PLUS */
     --uni-page-header-height: 0;

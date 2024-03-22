@@ -1,11 +1,10 @@
 import ConnectionStatus from "./wfc/client/connectionStatus";
-import Vue from 'vue'
 import wfc from "./wfc/client/wfc";
 import EventType from "./wfc/client/wfcEvent";
 import ConversationType from "./wfc/model/conversationType";
 import {eq, gt, numberValue, stringValue} from "./wfc/util/longUtil";
 import helper from "./pages/util/helper";
-import convert from './vendor/pinyin'
+import pinyin from 'pinyin/esm/pinyin'
 import GroupType from "./wfc/model/groupType";
 // import {imageThumbnail, videoDuration, videoThumbnail} from "./ui/util/imageUtil";
 import MessageContentMediaType from "./wfc/messages/messageContentMediaType";
@@ -15,7 +14,7 @@ import Message from "./wfc/messages/message";
 import ImageMessageContent from "./wfc/messages/imageMessageContent";
 import VideoMessageContent from "./wfc/messages/videoMessageContent";
 import FileMessageContent from "./wfc/messages/fileMessageContent";
-import ForwardType from "@/pages/conversation/message/forward/ForwardType";
+import ForwardType from "./pages/conversation/message/forward/ForwardType";
 import TextMessageContent from "./wfc/messages/textMessageContent";
 import SearchType from "./wfc/model/searchType";
 import Config from "./config";
@@ -34,6 +33,9 @@ import LeaveChannelChatMessageContent from "./wfc/messages/leaveChannelChatMessa
 import ArticlesMessageContent from "./wfc/messages/articlesMessageContent";
 import EnterChannelChatMessageContent from "./wfc/messages/enterChannelChatMessageContent";
 import NullChannelInfo from "./wfc/model/NullChannelInfo";
+import CallStartMessageContent from "./wfc/av/messages/callStartMessageContent";
+import {storeToRefs} from "pinia";
+import {pstore} from "./pstore";
 
 /**
  * 一些说明
@@ -42,155 +44,37 @@ import NullChannelInfo from "./wfc/model/NullChannelInfo";
  * _开头的函数，是内部函数
  * 外部不直接更新字段，而是通过提供各种action方法更新
  */
+let conversationState;
+let contactState;
+let searchState;
+let pickState;
+let miscState;
 let store = {
     debug: true,
     state: {
-        conversation: {
-            _wfc: wfc,
-            currentConversationInfo: null,
-            conversationInfoList: [],
-            currentConversationMessageList: [],
-            currentConversationOldestMessageId: 0,
-            currentConversationOldestMessageUid: 0,
-
-            currentConversationRead: null,
-
-            // TODO 调用setUserEnableReceipt时，需要更新
-            isMessageReceiptEnable: false,
-
-            inputtingUser: null,
-            inputClearHandler: null,
-
-            shouldAutoScrollToBottom: true,
-
-            previewMediaItems: [],
-            previewMediaIndex: null,
-
-            enableMessageMultiSelection: false,
-            quotedMessage: null,
-
-            downloadingMessages: [],
-            sendingMessages: [],
-
-            currentVoiceMessage: null,
-
-            _reset() {
-                this.currentConversationInfo = null;
-                this.conversationInfoList = []
-                this.currentConversationMessageList = [];
-                this.currentConversationOldestMessageId = 0;
-                this.currentConversationOldestMessageUid = 0;
-                this.currentConversationRead = null;
-                this.isMessageReceiptEnable = false;
-                this.inputtingUser = null;
-                this.inputClearHandler = null;
-                this.shouldAutoScrollToBottom = true;
-                this.previewMediaItems = [];
-                this.previewMediaIndex = null;
-                this.enableMessageMultiSelection = false;
-                this.quotedMessage = null;
-                this.downloadingMessages = [];
-                this.currentVoiceMessage = null;
-            }
-        },
-
-        contact: {
-            currentFriendRequest: null,
-            currentGroup: null,
-            currentFriend: null,
-
-            expandFriendRequestList: false,
-            expandFriendList: true,
-            expandGroup: false,
-
-            unreadFriendRequestCount: 0,
-            friendList: [],
-            friendRequestList: [],
-            favGroupList: [],
-            channelList: [],
-            favContactList: [],
-
-            selfUserInfo: null,
-            _reset() {
-                this.currentFriendRequest = null;
-                this.currentGroup = null;
-                this.currentFriend = null;
-
-                this.expandFriendRequestList = false;
-                this.expandFriendList = true;
-                this.expandGroup = false;
-
-                this.unreadFriendRequestCount = 0;
-                this.friendList = [];
-                this.friendRequestList = [];
-                this.favGroupList = [];
-                this.favContactList = [];
-
-                this.selfUserInfo = null;
-            }
-        },
-
-        search: {
-            query: null,
             conversation: null,
-            userSearchResult: [],
-            contactSearchResult: [],
-            groupSearchResult: [],
-            conversationSearchResult: [],
-            messageSearchResult: [],
-
-            _reset() {
-                this.query = null;
-                this.conversation = null;
-                this.userSearchResult = [];
-                this.contactSearchResult = [];
-                this.groupSearchResult = [];
-                this.conversationSearchResult = [];
-                this.messageSearchResult = [];
-
-            }
+        contact: null,
+        search: null,
+        pick: null,
+        misc: null,
         },
-
-        pick: {
-            users: [],
-            conversations: [],
-            messages: [],
-
-            _reset() {
-                this.users = [];
-                this.conversations = [];
-                this.messages = [];
-
-            }
-        },
-
-        misc: {
-            connectionStatus: ConnectionStatus.ConnectionStatusUnconnected,
-            isAppHidden: false,
-            enableNotification: true,
-            enableNotificationMessageDetail: true,
-            uploadBigFiles: [],
-            wfc: wfc,
-            config: Config,
-            isRecording: false,
-            userOnlineStateMap: new Map(),
-
-            _reset() {
-                this.connectionStatus = ConnectionStatus.ConnectionStatusUnconnected;
-                this.enableNotification = true;
-                this.enableNotificationMessageDetail = true;
-                this.uploadBigFiles = [];
-                this.wfc = wfc;
-                this.config = Config;
-                this.isRecording = false;
-                this.userOnlineStateMap = new Map();
-            }
-        },
-    },
 
     init() {
         console.log('init store')
-        // 目前，通知只可能在主窗口触发
+
+        const {conversationStore, contactStore, pickStore, searchStore, miscStore} = storeToRefs(pstore())
+        conversationState = conversationStore.value;
+        contactState = contactStore.value;
+        searchState = searchStore.value;
+        pickState = pickStore.value;
+        miscState = miscStore.value;
+
+        store.state.conversation = conversationState;
+        store.state.contact = contactState;
+        store.state.search = searchState;
+        store.state.pick = pickState;
+        store.state.misc = miscState;
+
         wfc.eventEmitter.on(EventType.ConnectionStatusChanged, (status) => {
             miscState.connectionStatus = status;
             console.log('connection status changed', status);
@@ -274,7 +158,7 @@ let store = {
 
 
         wfc.eventEmitter.on(EventType.ReceiveMessage, (msg, hasMore) => {
-            console.log('receiveMessage', hasMore);
+            //console.log('receiveMessage', msg, hasMore);
             if (miscState.connectionStatus === ConnectionStatus.ConnectionStatusReceiveing) {
                 return;
             }
@@ -312,13 +196,6 @@ let store = {
                 if (!this._isDisplayMessage(msg) || msg.messageContent.type === MessageContentType.RecallMessage_Notification) {
                     return;
                 }
-                let msgIndex = conversationState.currentConversationMessageList.findIndex(m => {
-                    return m.messageId === msg.messageId || eq(m.messageUid, msg.messageUid);
-                });
-                if (msgIndex > -1) {
-                    console.log('msg duplicate')
-                    return;
-                }
 
                 // 会把下来加载更多加载的历史消息给清理了
                 let lastTimestamp = 0;
@@ -327,6 +204,20 @@ let store = {
                     lastTimestamp = conversationState.currentConversationMessageList[msgListLength - 1].timestamp;
                 }
                 this._patchMessage(msg, lastTimestamp);
+                let msgIndex = conversationState.currentConversationMessageList.findIndex(m => {
+                    return m.messageId === msg.messageId
+                        || (gt(m.messageUid, 0) && eq(m.messageUid, msg.messageUid))
+                        || (m.messageContent.type === MessageContentType.Streaming_Text_Generating
+                            && (msg.messageContent.type === MessageContentType.Streaming_Text_Generating || msg.messageContent.type === MessageContentType.Streaming_Text_Generated)
+                            && m.messageContent.streamId === msg.messageContent.streamId
+                        )
+                })
+                if (msgIndex > -1) {
+                    // FYI: https://v2.vuejs.org/v2/guide/reactivity#Change-Detection-Caveats
+                    conversationState.currentConversationMessageList.splice(msgIndex, 1, msg);
+                    console.log('msg duplicate', msg.messageId, msg.messageUid)
+                    return;
+                }
                 conversationState.currentConversationMessageList.push(msg);
             }
 
@@ -472,7 +363,7 @@ let store = {
 
     _isDisplayMessage(message) {
         // return [PersistFlag.Persist, PersistFlag.Persist_And_Count].indexOf(MessageConfig.getMessageContentPersitFlag(message.messageContent.type)) > -1;
-        return message.messageId !== 0;
+        return message.messageId !== 0 || message.messageContent.type === MessageContentType.Streaming_Text_Generating;
     },
 
     _loadDefaultConversationList() {
@@ -941,7 +832,6 @@ let store = {
         }[mediaType];
 
         let messageContent;
-        console.log('send file', file)
         switch (messageContentmediaType) {
             case MessageContentMediaType.Image:
                 messageContent = new ImageMessageContent(fileOrLocalPath, remotePath);
@@ -1041,7 +931,7 @@ let store = {
                     break;
                 }
             }
-            console.log('_loadCurrentConversationMessages success', conversation, msgs.length, msgs)
+            console.log('_loadCurrentConversationMessages success', conversation, msgs)
         }, err => {
             console.error('_loadCurrentConversationMessages error', err);
         });
@@ -1081,11 +971,11 @@ let store = {
             return;
         }
         let conversation = conversationState.currentConversationInfo.conversation;
-        console.log('loadConversationHistoryMessage ', stringValue(conversationState.currentConversationOldestMessageUid), conversation, conversationState.currentConversationOldestMessageId,  conversationState.currentConversationMessageList);
+        console.log('loadConversationHistoryMessage', conversation, conversationState.currentConversationOldestMessageId, stringValue(conversationState.currentConversationOldestMessageUid));
         let loadRemoteHistoryMessageFunc = () => {
-            wfc.loadRemoteConversationMessages(conversation, [], stringValue(conversationState.currentConversationOldestMessageUid), 20,
+            wfc.loadRemoteConversationMessages(conversation, [], conversationState.currentConversationOldestMessageUid, 20,
                 (msgs, hasMore) => {
-                    console.log('loadRemoteConversationMessages response', conversationState.currentConversationOldestMessageUid, msgs.length);
+                    console.log('loadRemoteConversationMessages response', msgs.length);
                     if (msgs.length === 0) {
                         // 拉回来的消息，本地全都有时，会走到这儿
                         if (hasMore) {
@@ -1338,10 +1228,7 @@ let store = {
     _patchCurrentConversationOnlineStatus() {
         let convInfo = conversationState.currentConversationInfo;
         if (convInfo && convInfo.conversation.type === ConversationType.Single) {
-            // 在 将 object 和 ui 绑定之前， 向 object 中新增的属性是 reactive 的，但绑定之后，才新增的属性，不是 reactive 的，
-            // 故需要通过下面这种方法，让其成为 reactive 的属性
-            // conversationState.currentConversationInfo.conversation._targetOnlineStateDesc = userOnlineStatus.desc();
-            Vue.set(conversationState.currentConversationInfo.conversation, '_targetOnlineStateDesc', this.getUserOnlineState(convInfo.conversation.target))
+            conversationState.currentConversationInfo.conversation._targetOnlineStateDesc =  this.getUserOnlineState(convInfo.conversation.target);
         } else {
             //TODO
         }
@@ -1372,14 +1259,14 @@ let store = {
             } else {
                 u._displayName = wfc.getUserDisplayNameEx(u);
             }
-            u._pinyin = convert(u._displayName, {style: 0}).join('').trim().toLowerCase();
+            u._pinyin = pinyin(u._displayName, {style: 0}).join('').trim().toLowerCase();
             let firstLetter = u._pinyin[0];
             if (firstLetter >= 'a' && firstLetter <= 'z') {
                 u.__sortPinyin = 'a' + u._pinyin;
             } else {
                 u.__sortPinyin = 'z' + u._pinyin;
             }
-            u._firstLetters = convert(u._displayName, {style: 4}).join('').trim().toLowerCase();
+            u._firstLetters = pinyin(u._displayName, {style: 4}).join('').trim().toLowerCase();
             return u;
         });
         if (compareFn) {
@@ -1432,21 +1319,31 @@ let store = {
     setCurrentFriendRequest(friendRequest) {
         contactState.currentFriendRequest = friendRequest;
         contactState.currentFriend = null;
+        contactState.currentOrganization = null;
         contactState.currentGroup = null;
     },
 
     setCurrentFriend(friend) {
         contactState.currentFriendRequest = null;
         contactState.currentFriend = friend;
+        contactState.currentOrganization = null;
         contactState.currentGroup = null;
     },
 
     setCurrentGroup(group) {
         contactState.currentFriendRequest = null;
         contactState.currentFriend = null;
+        contactState.currentOrganization = null;
         contactState.currentGroup = group;
     },
 
+    setCurrentOrganization(organization) {
+        contactState.currentFriendRequest = null;
+        contactState.currentFriend = null;
+        contactState.currentGroup = null;
+        // contactState.currentChannel = null;
+        contactState.currentOrganization = organization;
+    },
     toggleGroupList() {
         contactState.expandGroup = !contactState.expandGroup;
     },
@@ -1531,7 +1428,7 @@ let store = {
         if (!users || !filter || !filter.trim()) {
             return users;
         }
-        let queryPinyin = convert(filter, {style: 0}).join('').trim().toLowerCase();
+        let queryPinyin = pinyin(filter, {style: 0}).join('').trim().toLowerCase();
         let result = users.filter(u => {
             return u._displayName.indexOf(filter) > -1 || u._displayName.indexOf(queryPinyin) > -1
                 || u._pinyin.indexOf(filter) > -1 || u._pinyin.indexOf(queryPinyin) > -1
@@ -1544,9 +1441,9 @@ let store = {
     // 目前只搜索群名称
     filterFavGroup(query) {
         console.log('to search group', contactState.favGroupList)
-        let queryPinyin = convert(query, {style: 0}).join('').trim().toLowerCase();
+        let queryPinyin = pinyin(query, {style: 0}).join('').trim().toLowerCase();
         let result = contactState.favGroupList.filter(g => {
-            let groupNamePinyin = convert(g.name, {style: 0}).join('').trim().toLowerCase();
+            let groupNamePinyin = pinyin(g.name, {style: 0}).join('').trim().toLowerCase();
             return g.name.indexOf(query) > -1 || g.name.indexOf(queryPinyin) > -1
                 || groupNamePinyin.indexOf(query) > -1 || groupNamePinyin.indexOf(queryPinyin) > -1
         });
@@ -1558,8 +1455,8 @@ let store = {
     // TODO
     filterConversation(query) {
         return conversationState.conversationInfoList.filter(info => {
-            let displayNamePinyin = convert(info.conversation._target._displayName, {style: 0}).join('').trim().toLowerCase();
-            let firstLetters = convert(info.conversation._target._displayName, {style: 4}).join('').trim().toLowerCase();
+            let displayNamePinyin = pinyin(info.conversation._target._displayName, {style: 0}).join('').trim().toLowerCase();
+            let firstLetters = pinyin(info.conversation._target._displayName, {style: 4}).join('').trim().toLowerCase();
             return info.conversation._target._displayName.indexOf(query) > -1 || displayNamePinyin.indexOf(query.toLowerCase()) > -1 || firstLetters.indexOf(query) > -1
         })
     },
@@ -1568,8 +1465,8 @@ let store = {
         // query = query.toLowerCase();
         // let groups = conversationState.conversationInfoList.filter(info => info.conversation.type === ConversationType.Group).map(info => info.conversation._target);
         // return groups.filter(groupInfo => {
-        //     let namePinyin = convert(groupInfo.name, {style: 0}).join('').trim().toLowerCase();
-        //     let firstLetters = convert(groupInfo.name, {style: 4}).join('').trim().toLowerCase();
+        //     let namePinyin = pinyin(groupInfo.name, {style: 0}).join('').trim().toLowerCase();
+        //     let firstLetters = pinyin(groupInfo.name, {style: 4}).join('').trim().toLowerCase();
         //     return groupInfo.name.indexOf(query) > -1 || namePinyin.indexOf(query) > -1 || firstLetters.indexOf(query) > -1
         // })
         let gsr = wfc.searchGroups(query)
@@ -1608,6 +1505,21 @@ let store = {
 
     isUserPicked(user) {
         let index = pickState.users.findIndex(u => u.uid === user.uid);
+        return index >= 0;
+    },
+
+    // pick actions
+    pickOrUnpickOrganization(org) {
+        let index = pickState.organizations.findIndex(o => o.id === org.id);
+        if (index >= 0) {
+            pickState.organizations = pickState.organizations.filter(o => o.id !== org.id)
+        } else {
+            pickState.organizations.push(org);
+        }
+    },
+
+    isOrganizationPicked(org) {
+        let index = pickState.organizations.findIndex(o => o.id === org.id);
         return index >= 0;
     },
 
@@ -1814,11 +1726,6 @@ let store = {
 
 }
 
-let conversationState = store.state.conversation;
-let contactState = store.state.contact;
-let searchState = store.state.search;
-let pickState = store.state.pick;
-let miscState = store.state.misc;
 
 function _reset() {
     conversationState._reset();

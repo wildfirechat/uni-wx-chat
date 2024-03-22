@@ -1,19 +1,20 @@
 <template>
     <view class="page-body">
-        <view class="page-section">
+        <view class="login-type-title">验证码登录</view>
+        <view class="mobile-container">
             <view>请输入手机号</view>
             <view>
-                <view>
-                    <input class="weui-input" @input="bindPhoneInput" type="number" placeholder="手机号"></input>
+                <view class="mobile-input-container">
+                    <input class="input" @input="bindPhoneInput" type="number" placeholder="手机号"/>
                 </view>
             </view>
         </view>
 
-        <view class="page-section">
-            <view>请输入验证码</view>
             <view class="auth-code-container">
-                <input @input="bindCodeInput" type="number" placeholder="验证码"></input>
-                <button :disabled="phone.length !== 11" @tap="bindAuthCodeTap">获取验证码</button>
+            <view>请输入验证码</view>
+            <view class="auth-code-input-container">
+                <input @input="bindCodeInput" type="number" placeholder="验证码"/>
+                <button size="mini" :disabled="phone.length !== 11" @tap="bindAuthCodeTap">获取验证码</button>
             </view>
         </view>
 
@@ -24,7 +25,6 @@
 
 <script>
 import wfc from "../../wfc/client/wfc";
-import wfcUIKit from "../../wfc/uikit/wfcUIKit";
 import Config from '../../config';
 import {getItem, setItem} from "../util/storageHelper";
 import ConnectionStatus from "../../wfc/client/connectionStatus";
@@ -129,41 +129,61 @@ export default {
 <style>
 .page-body {
     padding: 20rpx;
+    height: 100vh;
 }
 
-.page-section {
+.login-type-title {
+    margin-top: 120rpx;
+    font-size: 24px;
+    margin-bottom: 50rpx;
+}
+
+.mobile-container {
     margin-top: 20rpx;
 }
 
+.mobile-input-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    height: 40px;
+}
+
+.mobile-input-container input {
+    font-size: 14px;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.mobile-input-container .uni-input-input:focus {
+    border-bottom: 1px solid #3f64e4;
+}
+
 .auth-code-container {
+    margin-top: 30rpx;
+}
+
+.auth-code-input-container {
     display: flex;
     flex-direction: row;
     align-items: center;
     justify-content: space-between;
     width: 100%;
-    height: 50px;
-    /*background-color: green;*/
+    height: 40px;
 }
 
-.auth-code-container input {
+.auth-code-input-container input {
     flex: 1;
-    padding-right: 5px;
+    margin-right: 5px;
+    font-size: 14px;
+    border-bottom: 1px solid #e0e0e0;
 }
 
-.auth-code-container button {
-    /*background-color: red;*/
-    font-size: 14px;
+.auth-code-input-container .uni-input-input:focus {
+    border-bottom: 1px solid #3f64e4;
 }
 
 .confirm-button {
-    margin-top: 20px;
+    margin-top: 40px;
 }
 
-/*.other-button-hover {*/
-/*    background-color: #7497f1;*/
-/*}*/
-
-/*.button-hover {*/
-/*    background-color: #4168e0;*/
-/*}*/
 </style>
