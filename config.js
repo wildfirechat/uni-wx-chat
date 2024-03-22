@@ -18,6 +18,10 @@ export default class Config {
     //static APP_SERVER = 'http://wildfirechat.net:8888';
     static APP_SERVER = 'https://app.wildfirechat.net';
 
+    // 组织结构服务地址，如果没有部署组织结构服务，或者不需要组织结构的话，可置为 null
+    // 组织结构项目：https://github.com/wildfirechat/organization-platform 或 https://gitee.com/wfchat/organization-platform
+    static ORGANIZATION_SERVER = 'https://org.wildfirechat.cn';
+
     // 请仔细看注释
     // 仅仅是 HOST，没有 http 前缀，后面也没有端口
     // IM SERVER 的 host 地址，一定要和 APP_SERVER 对应起来，即 APP_SERVER 上配置的 im-server 和下面所配置的im-server 是同一个
