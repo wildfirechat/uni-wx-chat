@@ -7,8 +7,8 @@ import picker from "./common/picker";
 import wfc from "./wfc/client/wfc";
 import Config from "./config";
 import forward from "./common/forward";
-import pttClient from "./wfc/ptt/pttClient";
-import avengineKit from "./wfc/av/engine/avenginekit";
+// import pttClient from "./wfc/ptt/pttClient";
+// import avengineKit from "./wfc/av/engine/avenginekit";
 import {getItem} from "./pages/util/storageHelper";
 import zhCNLang from  './assets/lang/zh-CN.json'
 import zhTWLang from  './assets/lang/zh-TW.json'

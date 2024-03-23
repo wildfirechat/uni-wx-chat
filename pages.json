@@ -14,7 +14,8 @@
         {
             "path": "pages/login/LoginPage",
             "style": {
-                "navigationBarTitleText": "野火IM"
+                "navigationBarTitleText": "野火IM Login0",
+                "navigationStyle": "custom"
             }
         },
         {
@@ -232,7 +233,6 @@
         {
             "path": "pages/voip/Single",
             "style": {
-                "titleNView": false,
                 "navigationBarTitleText": "单人音视频通话",
                 "navigationBarTextStyle": "white"
             }
@@ -240,7 +240,6 @@
         {
             "path": "pages/voip/Multi",
             "style": {
-                "titleNView": false,
                 "navigationBarTitleText": "多人音视频通话",
                 "navigationBarTextStyle": "white"
             }
@@ -278,7 +277,6 @@
         {
             "path": "pages/voip/conference/ConferencePage",
             "style": {
-                "titleNView": false,
                 "navigationBarTitleText": "音视频会议",
                 "navigationBarTextStyle": "white"
             }

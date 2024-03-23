@@ -143,8 +143,5 @@ export default {
     color: #F95569;
 }
 
-.join-conference-container > * {
-    margin-top: 20px;
-}
 
 </style>

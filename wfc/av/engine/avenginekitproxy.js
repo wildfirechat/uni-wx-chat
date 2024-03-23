@@ -7,7 +7,7 @@ import ConversationType from "../../model/conversationType";
 import MessageContentType from "../../messages/messageContentType";
 import wfc from "../../client/wfc";
 import MessageConfig from "../../client/messageConfig";
-import DetectRTC from 'detectrtc';
+// import DetectRTC from 'detectrtc';
 import Config from "../../../config";
 import {longValue, numberValue} from '../../util/longUtil'
 import Conversation from "../../../wfc/model/conversation";
@@ -56,15 +56,15 @@ export class AvEngineKitProxy {
             return;
         }
         this.wfc = wfc;
-        DetectRTC.load(() => {
-            this.isSupportVoip = DetectRTC.isWebRTCSupported;
-            this.hasMicrophone = DetectRTC.hasMicrophone;
-            // Safari 14.0 版本，hasSpeakers一直为false，先全部置为true
-            //this.hasSpeaker = DetectRTC.hasSpeakers;
-            this.hasSpeaker = true;
-            this.hasWebcam = DetectRTC.hasWebcam;
-            console.log(`detectRTC, isWebRTCSupported: ${DetectRTC.isWebRTCSupported}, hasWebcam: ${DetectRTC.hasWebcam}, hasSpeakers: ${DetectRTC.hasSpeakers}, hasMicrophone: ${DetectRTC.hasMicrophone}`, this.isSupportVoip);
-        });
+        // DetectRTC.load(() => {
+        //     this.isSupportVoip = DetectRTC.isWebRTCSupported;
+        //     this.hasMicrophone = DetectRTC.hasMicrophone;
+        //     // Safari 14.0 版本，hasSpeakers一直为false，先全部置为true
+        //     //this.hasSpeaker = DetectRTC.hasSpeakers;
+        //     this.hasSpeaker = true;
+        //     this.hasWebcam = DetectRTC.hasWebcam;
+        //     console.log(`detectRTC, isWebRTCSupported: ${DetectRTC.isWebRTCSupported}, hasWebcam: ${DetectRTC.hasWebcam}, hasSpeakers: ${DetectRTC.hasSpeakers}, hasMicrophone: ${DetectRTC.hasMicrophone}`, this.isSupportVoip);
+        // });
         let wfcEvent = wfc.eventEmitter;
         wfcEvent.on(EventType.ReceiveMessage, this.onReceiveMessage);
         wfcEvent.on(EventType.ConferenceEvent, this.onReceiveConferenceEvent);

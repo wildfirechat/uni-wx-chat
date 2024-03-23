@@ -1,4 +1,7 @@
 <template>
+    <view>
+        hello world
+    </view>
 </template>
 
 <script>
@@ -7,7 +10,11 @@ import wfc from "../wfc/client/wfc";
 
 export default {
     name: "SplashPage",
+    created() {
+        console.log('splash created')
+    },
     onLoad() {
+        console.log('splash onLoad')
         let userId = getItem('userId');
         let token = getItem('token')
         if (token) {

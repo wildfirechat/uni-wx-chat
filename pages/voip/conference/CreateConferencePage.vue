@@ -203,9 +203,6 @@ export default {
     color: #F95569;
 }
 
-.order-conference-container > * {
-    margin-top: 20px;
-}
 
 .action-container {
     display: flex;

@@ -67,7 +67,7 @@ import QuoteInfo from "../../wfc/model/quoteInfo";
 import AudioInputView from "./message/AudioInputView.vue";
 import PttAudioInputView from "./message/PttAudioInputView.vue";
 import Draft from "../util/draft";
-import pttClient from "../../wfc/ptt/pttClient";
+// import pttClient from "../../wfc/ptt/pttClient";
 import avenginekitproxy from "../../wfc/av/engine/avenginekitproxy";
 
 export default {
@@ -91,7 +91,7 @@ export default {
             showRecorder: false,
             showVoice: false,
             showPtt: false,
-            isPttEnable: pttClient.isPttClientEnable(),
+            isPttEnable: false,
             extList: [
                 {
                     title: '相册',

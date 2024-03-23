@@ -33,18 +33,6 @@ export default {
     onShow: function () {
         console.log("App Show");
         store.state.misc.isAppHidden = false;
-        // #ifdef H5
-        let userId = getItem('userId');
-        let token = getItem('token')
-        if (token) {
-            wfc.connect(userId, token);
-            this.go2ConversationList();
-        } else {
-            uni.redirectTo({
-                url: '/pages/login/LoginPage',
-            })
-        }
-        // #endif
     },
 
     onHide: function () {

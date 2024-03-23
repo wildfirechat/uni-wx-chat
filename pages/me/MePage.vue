@@ -47,7 +47,7 @@ export default {
             clear();
             uni.reLaunch(
                 {
-                    url:'/pages/login/login'
+                    url:'/pages/login/loginPage'
                 }
             );
         },

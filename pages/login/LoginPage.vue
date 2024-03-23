@@ -43,6 +43,14 @@ export default {
     components: {},
     props: {},
 
+    created() {
+        console.log('login created')
+    },
+
+    mounted() {
+        console.log('login mounted')
+    },
+
     onShow() {
         console.log('login onShow');
         if ((Config.APP_SERVER.indexOf('wildfirechat') >= 0 && Config.IM_SERVER_HOST.indexOf('wildfirechat') === -1)
