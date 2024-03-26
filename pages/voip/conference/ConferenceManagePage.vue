@@ -59,7 +59,6 @@ import ConferenceParticipantListView from "./ConferenceParticipantListView";
 import ConferenceHandUpListView from "./ConferenceHandUpListView";
 import ConferenceApplyUnmuteVideoListView from "./ConferenceApplyUnmuteVideoListView.vue";
 import ConferenceApplyUnmuteAudioListView from "./ConferenceApplyUnmuteAudioListView.vue";
-import avengineKit from "../../../wfc/av/internal/engine.min";
 
 export default {
     name: "ConferenceManageView",
@@ -73,7 +72,7 @@ export default {
             showAudioApplyList: false,
             showVideoApplyList: false,
             showHandUpList: false,
-            session: avengineKit.currentCallSession(),
+            session: conferenceManager.session,
             conferenceParticipantUpdateTime: new Date().getTime(),
         }
     },
@@ -122,12 +121,12 @@ export default {
         },
         participants() {
             let participantUserInfos = [];
-            let selfProfile = avengineKit.getMyProfile(this.session.callId);
+            let selfProfile = this.session.getSelfProfile();
             let selfUserInfo = this.profile2UserInfo(selfProfile)
             selfUserInfo.__conferenceParticipantUpdateTime = this.conferenceParticipantUpdateTime;
             console.log('selfProfile', selfProfile);
             participantUserInfos.push(selfUserInfo);
-            let participantProfiles = avengineKit.getParticipantProfiles(this.session.callId);
+            let participantProfiles = this.session.getParticipantProfiles();
             console.log('participantProfiles', participantProfiles)
             for (const p of participantProfiles) {
                 let userInfo = this.profile2UserInfo(p);

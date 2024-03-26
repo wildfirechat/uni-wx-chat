@@ -6,7 +6,7 @@
 <!--static STATUS_CONNECTED = 4;-->
 <!--}-->
 <template>
-    <div style="flex: 1; display: flex; flex-direction: column" ref="rootContainer">
+    <div class="voi-conference-container">
         <div v-if="session" class="main-slider-container"
              style="display: flex; flex: 1;">
             <!--main-->
@@ -84,11 +84,11 @@
                     <div class="action" @click="chat">
                         <text class="iconfont icon-ion-ios-chatboxes"
                               style="width: 40px; height: 40px; font-size: 40px; color: black"
-                              v-bind:style="{color: showConversationView ? 'white' : 'black'}">&#xf3fa;
+                              v-bind:style="{color: showConversationView ? 'white' : 'black'}">
                         </text>
                         <p>聊天</p>
                     </div>
-                    <div v-if="selfUserInfo && selfUserInfo.uid !== conferenceManager.conferenceInfo.owner" class="action">
+                    <div v-if="selfUserInfo && conferenceManager.conferenceInfo && selfUserInfo.uid !== conferenceManager.conferenceInfo.owner" class="action">
                         <image v-if="!conferenceManager.isHandUp" @click="handup"
                                class="action-img"
                                src='/static/image/av/av_conference_handup.png'/>
@@ -127,23 +127,26 @@ import CallSessionCallback from "../../../wfc/av/engine/callSessionCallback";
 import CallState from "../../../wfc/av/engine/callState";
 import CallEndReason from "../../../wfc/av/engine/callEndReason";
 import VideoType from "../../../wfc/av/engine/videoType";
-import ConferenceParticipantVideoView from "./ConferenceParticipantVideoView.nvue";
+import ConferenceParticipantVideoView from "./ConferenceParticipantVideoView";
 import avengineKit from "../../../wfc/av/internal/engine.min";
 import Conversation from "../../../wfc/model/conversation";
 import ConversationType from "../../../wfc/model/conversationType";
 import ChatRoomInfo from "../../../wfc/model/chatRoomInfo";
+import avenginekitproxy from "../../../wfc/av/engine/avenginekitproxy";
+import conferenceManager from "./conferenceManager";
+import wfc from "../../../wfc/client/wfc";
 
 export default {
     name: 'ConferencePage',
     data() {
         return {
-            wfc: getApp().wfc,
+            wfc: wfc,
             conferenceId: null,
             password: '',
-            conferenceManager: getApp().conferenceManager,
-            session: {},
+            conferenceManager: conferenceManager,
+            session: null,
             conferenceInfo: null,
-            audioOnly: true,
+            audioOnly: false,
             status: 1,
             selfUserInfo: null,
             // 包含自己
@@ -190,53 +193,82 @@ export default {
             }
             this.conferenceInfo = this.conferenceManager.conferenceInfo;
         } else {
-            // why?
-            // setConferenceInfo 里面会用到 wfc，但需要等 mounted 之后，wfc 才生效
-            this.$nextTick(() => {
-                this.conferenceInfo = JSON.parse(option.conferenceInfo)
-                console.log('conferencePage parameters', this.conferenceInfo, option.muteAudio, option.muteVideo)
-                let muteAudio = option.muteAudio;
-                let muteVideo = option.muteVideo;
-                this.conferenceManager.setConferenceInfo(this.conferenceInfo);
-                this.joinConference(this.conferenceInfo, muteAudio, muteVideo);
-            })
         }
     },
 
     created() {
-        let dom = weex.requireModule("dom");
-        dom.addRule('fontFace', {
-            fontFamily: 'icomoon',
-            //src: "url('file:/" + fontSrc + "')"
-            src: "url('/static/iconfonts/icomoon/fonts/icomoon.ttf')"
-        })
-
-        // this.conferenceManager.setVueInstance(this);
+        this.conferenceManager.setVueInstance(this);
         this.refreshUserInfoInternal = setInterval(() => {
             // this.refreshUserInfos();
         }, 3 * 1000)
-        this.conferenceManager.setup(getApp(), this);
+
+        this.$eventBus.$on('muteVideo', (mute) => {
+            if (this.session.videoMuted !== mute) {
+                let enable = this.session.videoMuted ? true : false;
+                this.enableVideo(enable);
+            }
+        })
+        this.$eventBus.$on('muteAudio', (mute) => {
+            if (this.session.audioMuted !== mute) {
+                let enable = this.session.audioMuted ? true : false;
+                this.enableAudio(enable);
+            }
+        })
     },
 
     mounted() {
-
-        // // 开发测试时使用，方便修改UI， 刷新页面之后，还能正常显示音视频通话页面，其他情况一定要将下面代码注释
-        // let session = avengineKit.currentCallSession();
-        // if (session) {
-        //     console.log('current session', session.state, session);
-        //     this.session = session;
-        //     this.callState = session.state;
-        // }
-        // // end
+        console.log('conferencePage mounted')
+        this.setupSessionCallback();
 
         if (this.callState === CallState.STATUS_CONNECTED) {
-            this.setupParticipants();
-            this.setupSessionCallback();
             this.onVoipConnected();
         }
+        this.$nextTick(() => {
+            console.log('ready')
+            avenginekitproxy.onVoipWindowReady(this);
+        })
     },
 
     methods: {
+        // 用来解决 iOS 上，不能自动播放问题
+        autoPlay() {
+            console.log('auto play');
+            if (!this.autoPlayInterval) {
+                this.autoPlayInterval = setInterval(() => {
+                    try {
+                        let videos = document.getElementsByTagName('video');
+                        let allPlaying = true;
+                        for (const video of videos) {
+                            if (video.paused) {
+                                allPlaying = false;
+                                break;
+                            }
+                        }
+                        // participantUserInfos 不包含自己
+                        if (allPlaying && videos.length === this.participantUserInfos.filter(p => !p._isAudience).length + 1) {
+                            clearInterval(this.autoPlayInterval);
+                            this.autoPlayInterval = 0;
+                            console.log('auto play, allPlaying', videos.length);
+                            return;
+                        }
+
+                        for (const video of videos) {
+                            if (video.paused) {
+                                let p = video.play();
+                                if (p !== undefined) {
+                                    p.catch(err => {
+                                        // do nothing
+                                    })
+                                }
+                            }
+                        }
+                    } catch (e) {
+                        // do nothing
+                    }
+
+                }, 100);
+            }
+        },
         profile2UserInfo(profile) {
             let userInfo = this.wfc.getUserInfo(profile.userId);
             userInfo._isAudience = profile.audience;
@@ -246,27 +278,6 @@ export default {
             userInfo._volume = 0;
             userInfo._isScreenSharing = !!profile.screenSharing;
             return userInfo;
-        },
-
-        joinConference(conferenceInfo, muteAudio, muteVideo) {
-            let audience = muteAudio && muteVideo;
-            let audioOnly = false;
-            let callExtra = '';
-            console.log('join conference', conferenceInfo.conferenceId, audioOnly, conferenceInfo.pin, conferenceInfo.owner, conferenceInfo.conferenceTitle, '', audience, conferenceInfo.advance, muteAudio, muteVideo, callExtra)
-            let session = avengineKit.joinConference(conferenceInfo.conferenceId, audioOnly, conferenceInfo.pin, conferenceInfo.owner, conferenceInfo.conferenceTitle, '', audience, conferenceInfo.advance, muteAudio, muteVideo, callExtra);
-            if (session) {
-                this.session = session;
-
-                this.setupSessionCallback();
-            } else {
-                console.log('joinConference failed, session is null')
-                uni.navigateBack({
-                    delta: 1,
-                    fail: err => {
-                        console.log('nav back from ConferencePage err', err);
-                    }
-                });
-            }
         },
 
         setupSessionCallback() {
@@ -288,10 +299,43 @@ export default {
                 }
             };
 
-            sessionCallback.didCreateLocalVideoTrack = (screenShare) => {
-                console.log('didCreateLocalVideoTrack 00', screenShare)
-                // this.selfUserInfo._isVideoMuted = false;
-                // this.selfUserInfo._isScreenSharing = screenShare;
+
+            sessionCallback.onInitial = (session, selfUserInfo, initiatorUserInfo) => {
+                //this.session.rotateAng = 90;
+
+                selfUserInfo._isHost = session.host === selfUserInfo.uid;
+                selfUserInfo._isAudience = session.audience;
+                selfUserInfo._isVideoMuted = session.videoMuted;
+                selfUserInfo._isAudioMuted = session.audioMuted;
+                selfUserInfo._volume = 0;
+                // 先添加属性，在赋值，才能 reactive
+                this.selfUserInfo = selfUserInfo;
+                this.participantUserInfos = [selfUserInfo];
+
+                console.log('oninitial', selfUserInfo._isAudience)
+                // pls refer to: https://vuejs.org/v2/guide/reactivity.html
+                this.$set(this.selfUserInfo, '_stream', null);
+                this.$set(this.selfUserInfo, '_screenShareStream', null);
+                this.$set(this.selfUserInfo, '_isScreenSharing', false);
+                this.participantUserInfos.forEach(p => this.$set(p, "_stream", null))
+
+                this.session = session;
+
+                conferenceManager.session = session;
+                conferenceManager.getConferenceInfo(session.callId);
+            };
+
+            sessionCallback.didCreateLocalVideoTrack = (stream, screenShare) => {
+                console.log('didCreateLocalVideoTrack', screenShare)
+                if (screenShare) {
+                    this.selfUserInfo._screenShareStream = stream;
+                } else {
+                    this.selfUserInfo._stream = stream;
+                    this.selfUserInfo._screenShareStream = null;
+                    this.selfUserInfo._isVideoMuted = false;
+                }
+                this.selfUserInfo._isScreenSharing = screenShare;
+                this.autoPlay();
             };
 
             sessionCallback.didRotateLocalVideoTrack = (stream) => {
@@ -310,15 +354,18 @@ export default {
                 // 可以进行相关提示
             };
 
-            sessionCallback.didReceiveRemoteVideoTrack = (userId, screenSharing) => {
+            sessionCallback.didReceiveRemoteVideoTrack = (userId, stream, screenSharing) => {
                 console.log('didReceiveRemoteVideoTrack', userId, screenSharing);
                 for (let i = 0; i < this.participantUserInfos.length; i++) {
                     let p = this.participantUserInfos[i];
                     if (p.uid === userId && p._isScreenSharing === screenSharing) {
                         p._isVideoMuted = false;
+                        p._stream = stream;
+                        p._stream.timestamp = new Date().getTime();
                         break;
                     }
                 }
+                this.autoPlay();
             };
 
             sessionCallback.didRemoveRemoteVideoTrack = (userId) => {
@@ -327,7 +374,7 @@ export default {
 
             sessionCallback.didParticipantJoined = (userId, screenSharing) => {
                 console.log('didParticipantJoined', userId, screenSharing)
-                let profile = avengineKit.getParticipantProfile(this.session.callId, userId, screenSharing);
+                let profile = this.session.getSubscriber(userId, screenSharing);
                 console.log('didParticipantJoined profile', profile)
                 let userInfo = this.profile2UserInfo(profile);
                 this.participantUserInfos.push(userInfo);
@@ -361,6 +408,13 @@ export default {
                 }
                 this.conferenceManager.destroy();
                 this.session = null;
+
+                uni.navigateBack({
+                    delta: 1,
+                    fail: err => {
+                        console.log('nav back from ConferencePage err', err);
+                    }
+                });
             }
 
             sessionCallback.onRequestChangeMode = (audience) => {
@@ -387,15 +441,21 @@ export default {
             sessionCallback.didChangeType = (userId, audience, screenSharing) => {
                 console.log('didChangeType', userId, audience, screenSharing);
                 let found = false;
-                let profile = avengineKit.getParticipantProfile(this.session.callId, userId, screenSharing);
+                let profile;
                 if (this.selfUserInfo.uid === userId) {
+                    profile = this.session.getSelfProfile(userId, screenSharing);
                     this.session.audience = audience;
                     this.session.videoMuted = profile.videoMuted;
                     this.session.audioMuted = profile.audioMuted;
+                } else {
+                    profile = this.session.getSubscriber(userId, screenSharing);
                 }
                 for (const u of this.participantUserInfos) {
                     if (u.uid === userId && u._isScreenSharing === screenSharing) {
                         u._isAudience = audience;
+                        if (audience) {
+                            u._stream = null;
+                        }
                         u._isVideoMuted = profile.videoMuted;
                         u._isAudioMuted = profile.audioMuted;
                         if (this.speakingVideoParticipant && this.speakingVideoParticipant.uid === u.uid) {
@@ -450,7 +510,7 @@ export default {
             sessionCallback.didMuteStateChanged = (participants) => {
                 console.log('conference', 'didMuteStateChanged', participants)
                 participants.forEach(p => {
-                    let profile = avengineKit.getParticipantProfile(this.session.callId, p, false);
+                    let profile = this.session.getSubscriber(p, false);
                     if (!profile) {
                         return;
                     }
@@ -496,7 +556,7 @@ export default {
                 }
             };
 
-            getApp().avengineKit.sessionCallback = sessionCallback;
+            avengineKit.sessionCallback = sessionCallback;
         },
 
         showAlertDialog(options) {
@@ -517,7 +577,7 @@ export default {
         },
 
         hangup() {
-            avengineKit.leaveConference(this.session.callId, false);
+            this.session.leaveConference(false);
             this.session = null;
             // this.conferenceManager.addHistory(this.conferenceManager.conferenceInfo, new Date().getTime() - this.conferenceManager.conferenceInfo.startTime * 1000)
             this.conferenceManager.destroy()
@@ -541,12 +601,13 @@ export default {
         // fixme
         // 这个这个方法应当叫 setAudioEnable，参数也是enable audio 的意思
         async enableAudio(enable) {
-            avengineKit.muteAudio(this.session.callId, !enable)
+            this.session.muteAudio(!enable)
 
+            this.selfUserInfo._isAudioMuted = !enable;
             console.log('enableAudio', this.selfUserInfo._isAudioMuted, this.session.audience, enable)
             if (enable) {
                 if (this.session.audience) {
-                    let result = avengineKit.switchAudience(this.session.callId, false);
+                    let result = this.session.switchAudience(false);
                     // if (result) {
                     //     this.selfUserInfo._isAudience = false;
                     //     this.session.audience = false;
@@ -554,7 +615,7 @@ export default {
                 }
             } else {
                 if (this.session.videoMuted && !this.session.audience) {
-                    let result = avengineKit.switchAudience(this.session.callId, true);
+                    let result = this.session.switchAudience(true);
                     // if (result) {
                     //     this.selfUserInfo._isAudience = true;
                     //     this.session.audience = true;
@@ -574,11 +635,12 @@ export default {
 
         async enableVideo(enable) {
             console.log('enableVideo', !enable)
-            avengineKit.muteVideo(this.session.callId, !enable)
+            this.session.muteVideo(!enable)
 
+            this.selfUserInfo._isVideoMuted = !enable;
             if (enable) {
                 if (this.session.audience) {
-                    let result = avengineKit.switchAudience(this.session.callId, false);
+                    let result = this.session.switchAudience(false);
                     console.log('switchAudience ', false, result)
                     // if (result) {
                     //     this.selfUserInfo._isAudience = false;
@@ -586,8 +648,8 @@ export default {
                     // }
                 }
             } else {
-                if (this.session.videoMuted && !this.session.audience) {
-                    let result = avengineKit.switchAudience(this.session.callId, true);
+                if (this.session.audioMuted && !this.session.audience) {
+                    let result = this.session.switchAudience(true);
                     console.log('switchAudience ', true, result)
                     // if (result) {
                     //     this.selfUserInfo._isAudience = true;
@@ -750,14 +812,17 @@ export default {
         },
 
         setupParticipants() {
+            if (this.session) {
+                return
+            }
             this.participantUserInfos.length = 0;
-            let selfProfile = avengineKit.getMyProfile(this.session.callId);
+            let selfProfile = this.session.getSubscriber(wfc.getUserId(), false);
             let selfUserInfo = this.profile2UserInfo(selfProfile)
             console.log('selfProfile', selfProfile);
             this.selfUserInfo = selfUserInfo;
             this.participantUserInfos.push(selfUserInfo);
 
-            let participantProfiles = avengineKit.getParticipantProfiles(this.session.callId);
+            let participantProfiles = this.session.getParticipantProfiles();
             console.log('participantProfiles', participantProfiles)
             for (const p of participantProfiles) {
                 let userInfo = this.profile2UserInfo(p);
@@ -835,7 +900,7 @@ export default {
                 // 演讲者布局，切换为小流，然后焦点用户切换为大流
                 this.participantUserInfos.forEach(u => {
                     if (u.uid !== this.selfUserInfo.uid && !u._isAudience && !u._isVideoMuted) {
-                        avengineKit.setParticipantVideoType(this.session.callId, u.uid, u._isScreenSharing, VideoType.SMALL_STREAM);
+                        this.session.setParticipantVideoType(u.uid, u._isScreenSharing, VideoType.SMALL_STREAM);
                     }
                 })
             } else {
@@ -965,7 +1030,7 @@ export default {
         },
 
         conferenceFocusUser() {
-            let focus = this.conferenceManager.conferenceInfo.focus;
+            let focus = this.conferenceManager.conferenceInfo ? this.conferenceManager.conferenceInfo.focus : null;
             if (!focus) {
                 return null;
             }
@@ -1009,11 +1074,11 @@ export default {
 
             console.log('computedFocusVideoParticipant', this.conferenceManager.currentFocusUser)
             if (this.conferenceManager.currentFocusUser) {
-                avengineKit.setParticipantVideoType(this.session.callId, this.conferenceManager.currentFocusUser.uid, this.conferenceManager.currentFocusUser._isScreenSharing, VideoType.SMALL_STREAM);
+                this.session.setParticipantVideoType(this.conferenceManager.currentFocusUser.uid, this.conferenceManager.currentFocusUser._isScreenSharing, VideoType.SMALL_STREAM);
             }
             if (sp) {
                 this.conferenceManager.currentFocusUser = sp;
-                avengineKit.setParticipantVideoType(this.session.callId, this.conferenceManager.currentFocusUser.uid, this.conferenceManager.currentFocusUser._isScreenSharing, VideoType.BIG_STREAM);
+                this.session.setParticipantVideoType(this.conferenceManager.currentFocusUser.uid, this.conferenceManager.currentFocusUser._isScreenSharing, VideoType.BIG_STREAM);
             } else {
                 if (this.session.screenSharing) {
                     sp = this.selfUserInfo;
@@ -1065,6 +1130,7 @@ export default {
 
     beforeUnmount() {
         console.log('conferencePage, beforeUnmount')
+        avenginekitproxy.onVoipWindowClose()
     },
 
     onShow() {
@@ -1085,6 +1151,16 @@ export default {
     font-family: icomoon;
 }
 
+.voi-conference-container {
+    width: 100vw;
+    height: var(--page-full-height-without-header);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background-color: rgb(41, 41, 41)
+}
+
 .main-slider-container {
     width: 750rpx;
     flex: 1;
@@ -1103,7 +1179,7 @@ export default {
     align-items: center;
     background: #2d3033;
     align-content: center;
-     /* 其实 nvue 不支持此属性，所以 三个人以上时，不能居中 https://uniapp.dcloud.net.cn/tutorial/nvue-css.html#flex-%E5%AE%B9%E5%99%A8 ! */
+    /* 其实 nvue 不支持此属性，所以 三个人以上时，不能居中 https://uniapp.dcloud.net.cn/tutorial/nvue-css.html#flex-%E5%AE%B9%E5%99%A8 ! */
 }
 
 .main-slider-container .grid {
@@ -1145,7 +1221,7 @@ export default {
 }
 
 .duration-action-container {
-    width: 750rpx;
+    width: 100%;
     height: 140px;
     background: #808080;
     display: flex;
@@ -1160,8 +1236,7 @@ export default {
 }
 
 .action-container {
-    /*width: 100%;*/
-    width: 750rpx;
+    width: 100%;
     display: flex;
     flex-direction: row;
     justify-content: center;
@@ -1174,7 +1249,6 @@ export default {
     align-items: center;
     font-size: 12px;
     color: white;
-    padding: 0 25px 0 25px;
 }
 
 .avatar {

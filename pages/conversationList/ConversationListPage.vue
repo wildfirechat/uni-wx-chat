@@ -38,10 +38,12 @@ export default {
             contextMenuX: 0,
             contextMenuY: 0,
             contextMenuItems: [],
+            isPageHidden:false,
         };
     },
 
     onShow() {
+        this.isPageHidden = false;
         console.log('conversationList onShow', this.sharedConversationState.conversationInfoList.length)
         let userId = getItem('userId');
         if (!userId) {
@@ -56,8 +58,9 @@ export default {
         }
     },
 
-    onHide(){
+    onHide() {
         console.log('conversationList onHide');
+        this.isPageHidden = true;
         this.$refs.mainActionMenu.hide();
     },
 
@@ -195,18 +198,31 @@ export default {
                 let unreadCount = info.unreadCount;
                 count += unreadCount.unread;
             });
-            // side
-            if (count > 0) {
+            return count;
+        }
+    },
+
+    watch: {
+        unread(newValue, oldValue) {
+            console.log('xxxx watch unread', newValue, oldValue, this.isPageHidden, this)
+            if (!window.__this){
+                window.__this = this;
+            }else {
+                window.__this2 = this
+            }
+            if (this.isPageHidden){
+                return
+            }
+            if (newValue > 0) {
                 uni.setTabBarBadge({
                     index: 0,
-                    text: '' + count
+                    text: '' + newValue
                 })
             } else {
-               uni.removeTabBarBadge({
-                   index: 0
-               })
+                uni.removeTabBarBadge({
+                    index: 0
+                })
             }
-            return count;
         }
     },
 
