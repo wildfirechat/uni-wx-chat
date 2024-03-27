@@ -38,7 +38,7 @@ export default {
             contextMenuX: 0,
             contextMenuY: 0,
             contextMenuItems: [],
-            isPageHidden:false,
+            isPageHidden: false,
         };
     },
 
@@ -180,7 +180,7 @@ export default {
                     desc = '正在同步...';
                     break;
                 case ConnectionStatus.ConnectionStatusConnected:
-                    organizationServerApi.login().then(r => console.log('xxx org login result', r)).catch(reason => console.log('xxxx logini fail ', reason));
+                    organizationServerApi.login().then(r => console.log('org login result', r)).catch(reason => console.log('org login fail ', reason));
                     desc = '';
                     break;
                 case ConnectionStatus.ConnectionStatusUnconnected:
@@ -201,16 +201,17 @@ export default {
             return count;
         }
     },
+    updated() {
+        console.log('updated xxx')
+    },
 
     watch: {
+        // TODO
+        // FIXME
+        // 很奇怪，会被触发两次
         unread(newValue, oldValue) {
-            console.log('xxxx watch unread', newValue, oldValue, this.isPageHidden, this)
-            if (!window.__this){
-                window.__this = this;
-            }else {
-                window.__this2 = this
-            }
-            if (this.isPageHidden){
+            console.log('watch unread', newValue, oldValue, this.isPageHidden, this)
+            if (this.isPageHidden) {
                 return
             }
             if (newValue > 0) {
