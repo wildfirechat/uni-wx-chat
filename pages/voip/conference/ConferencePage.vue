@@ -1140,8 +1140,8 @@ export default {
     unmounted() {
         // reset
         clearInterval(this.refreshUserInfoInternal);
-        // this.$eventBus.$off('muteVideo');
-        // this.$eventBus.$off('muteAudio');
+        this.$eventBus.$off('muteVideo');
+        this.$eventBus.$off('muteAudio');
     }
 }
 </script>
