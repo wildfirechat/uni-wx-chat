@@ -52,12 +52,12 @@ let miscState;
 let store = {
     debug: true,
     state: {
-            conversation: null,
+        conversation: null,
         contact: null,
         search: null,
         pick: null,
         misc: null,
-        },
+    },
 
     init() {
         console.log('init store')
@@ -88,7 +88,7 @@ let store = {
 
                 // 清除 token 等
                 clear();
-                if (status === ConnectionStatus.ConnectionStatusKickedOff){
+                if (status === ConnectionStatus.ConnectionStatusKickedOff) {
                     wfc.disconnect();
                 }
                 _reset();
@@ -532,7 +532,7 @@ let store = {
             if (conversationState.currentConversationInfo) {
                 let conversation = conversationState.currentConversationInfo.conversation;
                 if ([ConversationType.Single, ConversationType.Group].indexOf(conversation.type) >= 0) {
-                wfc.unwatchOnlineState(conversation.type, [conversation.target]);
+                    wfc.unwatchOnlineState(conversation.type, [conversation.target]);
                 } else if (conversation.type === ConversationType.Channel) {
                     let content = new LeaveChannelChatMessageContent();
                     wfc.sendConversationMessage(conversation, content);
@@ -1228,7 +1228,7 @@ let store = {
     _patchCurrentConversationOnlineStatus() {
         let convInfo = conversationState.currentConversationInfo;
         if (convInfo && convInfo.conversation.type === ConversationType.Single) {
-            conversationState.currentConversationInfo.conversation._targetOnlineStateDesc =  this.getUserOnlineState(convInfo.conversation.target);
+            conversationState.currentConversationInfo.conversation._targetOnlineStateDesc = this.getUserOnlineState(convInfo.conversation.target);
         } else {
             //TODO
         }
@@ -1372,7 +1372,7 @@ let store = {
             // searchState.messageSearchResult = this.searchMessage(query);
             // 默认不搜索新用户
             if (options.user) {
-            	this.searchUser(query);
+                this.searchUser(query);
             }
 
         } else {

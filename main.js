@@ -5,9 +5,7 @@ import store from "./store";
 import {createI18n} from 'vue-i18n'
 import picker from "./common/picker";
 import wfc from "./wfc/client/wfc";
-import Config from "./config";
 import forward from "./common/forward";
-import pttClient from "./wfc/ptt/pttClient";
 // web端
 import avengineKit from "./wfc/av/internal/engine.min";
 import {getItem} from "./pages/util/storageHelper";
@@ -122,8 +120,6 @@ avengineKit.setup();
 // }
 store.init();
 
-// app.store = store;
-// app.use(store)
 export function createApp() {
     return {
         app
