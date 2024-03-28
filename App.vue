@@ -2,7 +2,7 @@
 import store from "./store";
 import {getItem} from "./pages/util/storageHelper";
 import wfc from "./wfc/client/wfc";
-import conferenceManager from "./pages/voip/conference/conferenceManager";
+// import conferenceManager from "./pages/voip/conference/conferenceManager";
 import ConferenceInviteMessageContent from "./wfc/av/messages/conferenceInviteMessageContent";
 import Message from "./wfc/messages/message";
 import ForwardType from "./pages/conversation/message/forward/ForwardType";
@@ -12,14 +12,12 @@ export default {
         return {
             wfc: null,
             store: null,
-            conferenceManager: null,
         }
     },
     onLaunch: function () {
         console.log("App Launch");
         this.wfc = wfc;
         this.store = store;
-        this.conferenceManager = conferenceManager;
         // #ifdef APP-PLUS
         plus.push.getClientInfoAsync((info) => {
             let cid = info["clientid"];

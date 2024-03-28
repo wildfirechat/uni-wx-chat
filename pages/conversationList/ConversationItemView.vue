@@ -87,6 +87,7 @@ export default {
         },
 
         lastMessageContent() {
+            console.log('xxx lastMessageContent')
             let conversationInfo = this.conversationInfo;
             if (conversationInfo.lastMessage && conversationInfo.lastMessage.messageContent) {
                 let senderName = '';
@@ -109,6 +110,7 @@ export default {
         },
 
         unread() {
+            console.log('xxxxxxxx unread')
             let conversationInfo = this.conversationInfo;
             let unreadCount = conversationInfo.unreadCount;
             return unreadCount ? (unreadCount.unread + unreadCount.unreadMention + unreadCount.unreadMentionAll) : 0;

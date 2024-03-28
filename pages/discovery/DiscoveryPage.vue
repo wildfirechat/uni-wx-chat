@@ -33,7 +33,7 @@
 import store from "../../store";
 import Conversation from "../../wfc/model/conversation";
 import ConversationType from "../../wfc/model/conversationType";
-import avengineKit from "../../wfc/av/internal/engine.min";
+// import avengineKit from "../../wfc/av/internal/engine.min";
 
 export default {
     name: "DiscoveryPage",
