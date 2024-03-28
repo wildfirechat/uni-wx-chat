@@ -15,11 +15,8 @@
 <script lang="js">
 import wfc from "../../../wfc/client/wfc";
 import SoundMessageContent from "../../../wfc/messages/soundMessageContent";
-// #ifndef H5
-import permision from "@/common/permission.js"
-// #endif
+import BenzAMRRecorder from "benz-amr-recorder";
 
-const recorderManager = uni.getRecorderManager();
 export default {
     name: 'AudioInputView',
     props: {
@@ -34,7 +31,7 @@ export default {
             isRecording: false,
             canSend: true,
             text: '按住说话',
-            recorderManager: null,
+            amrRecorder: null,
             title: ' ',
             recordTime: 0,
             recordTimer: null,
@@ -42,83 +39,26 @@ export default {
         }
     },
     mounted() {
-        // 加载声音录制管理器
-        recorderManager.onStop(res => {
-            clearInterval(this.recordTimer);
-            // 兼容 uniapp 打包app，duration 和 fileSize 需要用户自己补充
-            // 文件大小 ＝ (音频码率) x 时间长度(单位:秒) / 8
-            let duration = res.duration ? res.duration / 1000 : this.recordTime * 1000;
-            uni.hideLoading();
-            // 兼容 uniapp 语音消息没有duration
-            if (this.canSend) {
-                if (duration < 1000) {
-                    uni.showToast({
-                        title: '录音时间太短',
-                        icon: 'none'
-                    });
-                } else {
-                    let filePath = plus.io.convertLocalFileSystemURL(res.tempFilePath);
-                    let soudMessageContent = new SoundMessageContent(filePath, '', this.recordTime)
-                    wfc.sendConversationMessage(this.conversationInfo.conversation, soudMessageContent);
-
-                }
-            }
-            this.popupToggle = false;
-            this.isRecording = false;
-            this.canSend = true;
-            this.title = ' ';
-            this.text = '按住说话'
-        });
     },
     methods: {
-        // #ifdef APP-PLUS
-        async checkPermission() {
-            let status = permision.isIOS ? await permision.requestIOS(['record']) :
-                await permision.requestAndroid(['android.permission.RECORD_AUDIO']);
-
-            if (status === null || status === 1) {
-                status = 1;
-            } else if (status === 2) {
-                uni.showModal({
-                    content: "系统麦克风已关闭",
-                    confirmText: "确定",
-                    showCancel: false,
-                    success: function (res) {
-                    }
-                })
-            } else {
-                uni.showModal({
-                    content: "需要麦克风权限",
-                    confirmText: "设置",
-                    success: function (res) {
-                        if (res.confirm) {
-                            permision.gotoAppSetting();
-                        }
-                    }
-                })
-            }
-            return status;
-        },
-        // #endif
         async handleLongPress(e) {
-            // #ifdef APP-PLUS
-            let status = await this.checkPermission();
-            if (status !== 1) {
-                return;
-            }
-            // #endif
             this.longPressClientY = e.changedTouches[e.changedTouches.length - 1].clientY;
             this.popupToggle = true;
-            recorderManager.start({
-                duration: 60000,
-                // 录音的时长，单位 ms，最大值 600000（10 分钟）
-                sampleRate: 44100,
-                // 采样率
-                // numberOfChannels: 1,
-                // 录音通道数
-                // encodeBitRate: 192000,
-                // 编码码率
-                format: 'mp3' // aac 音频格式，选择此格式创建的音频消息，可以在即时通信 IM 全平台（Android、iOS、微信小程序和Web）互通
+            this.amrRecorder = new BenzAMRRecorder();
+            this.amrRecorder.initWithRecord().then(() => {
+                this.isRecording = true;
+                this.amrRecorder.startRecord();
+                this.$notify({
+                    text: '请开始说话',
+                    type: 'info'
+                });
+            }).catch((e) => {
+                this.$notify({
+                    text: '录音失败',
+                    type: 'error'
+                });
+                console.log('录音失败', e);
+                this.amrRecorder = null;
             });
             this.startPoint = e.target;
             this.title = '正在录音';
@@ -152,9 +92,33 @@ export default {
         handleTouchEnd() {
             this.isRecording = false;
             this.popupToggle = false;
+            this.canSend = true;
             this.text = '按住说话';
+            this.title = ' '
             uni.hideLoading();
-            recorderManager.stop();
+
+            if (!this.amrRecorder) {
+                return;
+            }
+            if (!this.canSend){
+                this.amrRecorder.cancelRecord();
+                return;
+            }
+            this.amrRecorder.finishRecord().then(() => {
+                let duration = this.amrRecorder.getDuration();
+                if (duration > 1) {
+                    let blob = this.amrRecorder.getBlob();
+                    let file = new File([blob], new Date().getTime() + '.amr');
+                    let content = new SoundMessageContent(file, null, Math.ceil(duration));
+                    wfc.sendConversationMessage(this.conversationInfo.conversation, content);
+                } else {
+                    this.$notify({
+                        text: '录音时间太短',
+                        type: 'warn'
+                    });
+                }
+                this.amrRecorder = null;
+            });
 
         },
 
