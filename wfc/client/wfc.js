@@ -11,7 +11,6 @@ import Config from "../../config";
 import EventType from "./wfcEvent";
 import ConnectionStatus from "./connectionStatus";
 import NullUserInfo from "../model/nullUserInfo";
-import avenginekit from "../av/engine/avenginekitproxy";
 
 
 export class WfcManager {

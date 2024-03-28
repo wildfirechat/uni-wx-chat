@@ -9,7 +9,7 @@
                 :key="conversationInfoKey(conversationInfo)"
                 v-bind:class="{top:conversationInfo.top }"
             >
-                <ConversationItemView :conversation-info="conversationInfo" @longpress.native="showConversationContextMenu($event, conversationInfo)"/>
+                <ConversationItemView :conversation-info="conversationInfo" @contextmenu.native.prevent="showConversationContextMenu($event, conversationInfo)"/>
             </view>
         </uni-list>
 
@@ -38,10 +38,12 @@ export default {
             contextMenuX: 0,
             contextMenuY: 0,
             contextMenuItems: [],
+            isPageHidden: false,
         };
     },
 
     onShow() {
+        this.isPageHidden = false;
         console.log('conversationList onShow', this.sharedConversationState.conversationInfoList.length)
         let userId = getItem('userId');
         if (!userId) {
@@ -56,8 +58,9 @@ export default {
         }
     },
 
-    onHide(){
+    onHide() {
         console.log('conversationList onHide');
+        this.isPageHidden = true;
         this.$refs.mainActionMenu.hide();
     },
 
@@ -177,7 +180,7 @@ export default {
                     desc = '正在同步...';
                     break;
                 case ConnectionStatus.ConnectionStatusConnected:
-                    organizationServerApi.login().then(r => console.log('xxx org login result', r)).catch(reason => console.log('xxxx logini fail ', reason));
+                    organizationServerApi.login().then(r => console.log('org login result', r)).catch(reason => console.log('org login fail ', reason));
                     desc = '';
                     break;
                 case ConnectionStatus.ConnectionStatusUnconnected:
@@ -195,18 +198,32 @@ export default {
                 let unreadCount = info.unreadCount;
                 count += unreadCount.unread;
             });
-            // side
-            if (count > 0) {
+            return count;
+        }
+    },
+    updated() {
+        console.log('updated xxx')
+    },
+
+    watch: {
+        // TODO
+        // FIXME
+        // 很奇怪，会被触发两次
+        unread(newValue, oldValue) {
+            console.log('watch unread', newValue, oldValue, this.isPageHidden, this)
+            if (this.isPageHidden) {
+                return
+            }
+            if (newValue > 0) {
                 uni.setTabBarBadge({
                     index: 0,
-                    text: '' + count
+                    text: '' + newValue
                 })
             } else {
-               uni.removeTabBarBadge({
-                   index: 0
-               })
+                uni.removeTabBarBadge({
+                    index: 0
+                })
             }
-            return count;
         }
     },
 

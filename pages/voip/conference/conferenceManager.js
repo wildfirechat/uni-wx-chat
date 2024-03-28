@@ -1,11 +1,10 @@
 import conferenceApi from "../../../api/conferenceApi";
+import avenginekitproxy from "../../../wfc/av/engine/avenginekitproxy";
 import MessageContentType from "../../../wfc/messages/messageContentType";
 import ConferenceCommandMessageContent from "../../../wfc/av/messages/conferenceCommandMessageContent";
 import Conversation from "../../../wfc/model/conversation";
 import ConversationType from "../../../wfc/model/conversationType";
 import wfc from "../../../wfc/client/wfc";
-import EventType from "../../../wfc/client/wfcEvent";
-import {getItem, setItem} from "../../util/storageHelper";
 
 class ConferenceManager {
 
@@ -14,7 +13,8 @@ class ConferenceManager {
 
     vueInstance;
 
-    conferenceInfo = {};
+    session = null;
+    conferenceInfo = null;
     applyingUnmuteAudioMembers = [];
     applyingUnmuteVideoMembers = [];
     isApplyingUnmuteAudio = false;
@@ -31,36 +31,19 @@ class ConferenceManager {
 
     selfUserId = null;
 
-    setup(app, conferencePage) {
-        this.vueInstance = app;
-        this.conferencePage = conferencePage;
-        this.selfUserId = app.wfc.getUserId();
-        this.vueInstance.wfc.eventEmitter.on(EventType.ReceiveMessage, this.onReceiveMessage);
+    setVueInstance(eventBus) {
+        this.vueInstance = eventBus;
+        this.selfUserId = wfc.getUserId();
+        avenginekitproxy.listenVoipEvent('message', this.onReceiveMessage);
     }
 
     destroy() {
-        if (!this.vueInstance){
-            return
-        }
-        console.log('conferenceManager destroy')
-        this.vueInstance.wfc.eventEmitter.removeListener(EventType.ReceiveMessage, this.onReceiveMessage);
+        avenginekitproxy.events.removeListener('message', this.onReceiveMessage);
         if (this.conferenceInfo) {
-            this.vueInstance.wfc.quitChatroom(this.conferenceInfo.conferenceId);
+            wfc.quitChatroom(this.conferenceInfo.conferenceId);
         }
-        this.conferencePage = null;
         this.vueInstance = null;
         this.conferenceInfo = null;
-        this.applyingUnmuteAudioMembers = [];
-        this.applyingUnmuteVideoMembers = [];
-    }
-
-    setConferenceInfo(conferenceInfo) {
-        this.conferenceInfo = conferenceInfo;
-        this.vueInstance.wfc.joinChatroom(this.conferenceInfo.conferenceId, () => {
-            console.log('join conference chatroom success')
-        }, err => {
-            console.log('join conference chatroom error', err)
-        });
     }
 
     getConferenceInfo(conferenceId) {
@@ -74,14 +57,15 @@ class ConferenceManager {
             })
     }
 
-    onReceiveMessage = (msg) => {
-        // msg = this._fixLongSerializedIssue(msg)
-        console.log('conferenceManager onReceiveMessage 000', msg, this.conferenceInfo);
-        if (!this.conferenceInfo) {
-            return;
-        }
-        if (msg.messageContent.type === MessageContentType.CONFERENCE_CONTENT_TYPE_COMMAND && this.conferenceInfo.conferenceId === msg.messageContent.conferenceId) {
+    onReceiveMessage = async (event, msg) => {
+        msg = this._fixLongSerializedIssue(msg)
+        if (msg.messageContent.type === MessageContentType.CONFERENCE_CONTENT_TYPE_COMMAND) {
             let command = msg.messageContent;
+            if (command.conferenceId !== this.conferenceInfo.conferenceId) {
+                console.log('not current conference', command.conferenceId, this.conferenceInfo.conferenceId);
+                return;
+            }
+            console.log('receive conference command message', msg);
             let senderName;
             switch (command.commandType) {
                 case ConferenceCommandMessageContent.ConferenceCommandType.MUTE_ALL_AUDIO:
@@ -112,13 +96,13 @@ class ConferenceManager {
                         this.onRequestMute(false, command.boolValue);
                     }
                     break;
-                case ConferenceCommandMessageContent.ConferenceCommandType.REJECT_UNMUTE_AUDIO_REQUEST:
+                case ConferenceCommandMessageContent.ConferenceCommandType.REJECT_UNMUTE_REQUEST_AUDIO:
                     this.vueInstance.$notify({
                         text: '主持人拒绝了你的发言请求',
                         type: 'info'
                     });
                     break;
-                case ConferenceCommandMessageContent.ConferenceCommandType.REJECT_UNMUTE_VIDEO_REQUEST:
+                case ConferenceCommandMessageContent.ConferenceCommandType.REJECT_UNMUTE_REQUEST_VIDEO:
                     this.vueInstance.$notify({
                         text: '主持人拒绝了你的打开摄像头请求',
                         type: 'info'
@@ -159,7 +143,7 @@ class ConferenceManager {
                     if (this.isApplyingUnmuteAudio) {
                         this.isApplyingUnmuteAudio = false;
                         if (command.boolValue) {
-                            this.conferencePage.enableAudio(true);
+                            this.vueInstance.$eventBus.$emit('muteAudio', false);
                             this.vueInstance.$notify({
                                 text: '主持人已同意了你的发言请求',
                                 type: 'info'
@@ -172,7 +156,7 @@ class ConferenceManager {
                     if (this.isApplyingUnmuteVideo) {
                         this.isApplyingUnmuteVideo = false;
                         if (command.boolValue) {
-                            this.conferencePage.enableVideo(true);
+                            this.vueInstance.$eventBus.$emit('muteVideo', false);
                             this.vueInstance.$notify({
                                 text: '主持人已同意了你的打开摄像头请求',
                                 type: 'info'
@@ -421,10 +405,10 @@ class ConferenceManager {
         let desc;
         if (audio) {
             desc = '管理员将全体成员静音了';
-            this.conferencePage.enableAudio(false)
+            this.vueInstance.$eventBus.$emit('muteAudio', true);
         } else {
             desc = '管理员关闭了所有人的摄像头';
-            this.conferencePage.enableVideo(false);
+            this.vueInstance.$eventBus.$emit('muteVideo', true);
         }
         this.vueInstance.$notify({
             text: desc,
@@ -439,19 +423,18 @@ class ConferenceManager {
      */
     onCancelMuteAll(audio, requestUnmute) {
         if (requestUnmute && this.vueInstance.selfUserInfo._isAudience) {
-            this.conferencePage.alert({
+            this.vueInstance.$alert({
                 showIcon: false,
-                title: audio ? '主持人关闭了全员静音，是否要打开麦克风' : '管理员取消了全体成员关闭摄像头，是否打开摄像头',
                 content: audio ? '主持人关闭了全员静音，是否要打开麦克风' : '管理员取消了全体成员关闭摄像头，是否打开摄像头',
                 confirmText: '打开',
-                onClose: () => {
+                cancelCallback: () => {
                     // do nothing
                 },
-                onConfirm: () => {
+                confirmCallback: () => {
                     if (audio) {
-                        this.conferencePage.enableAudio(true);
+                        this.vueInstance.$eventBus.$emit('muteAudio', false);
                     } else {
-                        this.conferencePage.enableVideo(true);
+                        this.vueInstance.$eventBus.$emit('muteVideo', false);
                     }
                 }
             })
@@ -471,27 +454,26 @@ class ConferenceManager {
      */
     onRequestMute(audio, mute) {
         if (!mute) {
-            this.conferencePage.alert({
+            this.vueInstance.$alert({
                 showIcon: false,
-                title: audio ? '主持人邀请你发言' : '主持人邀请你打开摄像头',
                 content: audio ? '主持人邀请你发言' : '主持人邀请你打开摄像头',
                 confirmText: '接受',
-                onClose: () => {
+                cancelCallback: () => {
                     // do nothing
                 },
-                onConfirm: () => {
+                confirmCallback: () => {
                     if (audio) {
-                        this.conferencePage.enableAudio(true);
+                        this.vueInstance.$eventBus.$emit('muteAudio', false);
                     } else {
-                        this.conferencePage.enableVideo(true);
+                        this.vueInstance.$eventBus.$emit('muteVideo', false);
                     }
                 }
             })
         } else {
             if (audio) {
-                this.conferencePage.enableAudio(false);
+                this.vueInstance.$eventBus.$emit('muteAudio', true);
             } else {
-                this.conferencePage.enableVideo(false);
+                this.vueInstance.$eventBus.$emit('muteVideo', true);
             }
 
             this.vueInstance.$notify({
@@ -502,31 +484,30 @@ class ConferenceManager {
     }
 
     addHistory(conferenceInfo, durationMS) {
-        console.log('addHistory', conferenceInfo, durationMS);
-        let tmp = getItem('historyConfList');
-        let historyList = [];
-        if (tmp) {
-            historyList = JSON.parse(tmp);
+        if (!conferenceInfo) {
+            return;
         }
+        console.log('addHistory', conferenceInfo, durationMS);
+        let tmp = localStorage.getItem('historyConfList');
+        let historyList = JSON.parse(tmp);
+        historyList = historyList ? historyList : [];
         conferenceInfo.endTime = Math.ceil(conferenceInfo.startTime + durationMS / 1000);
         let index = historyList.findIndex(info => info.conferenceId === conferenceInfo.conferenceId)
         if (index >= 0) {
             historyList[index] = conferenceInfo;
         } else {
             historyList.push(conferenceInfo);
-            if (historyList.length > 10) {
+            if (historyList.length > 50) {
                 historyList = historyList.shift();
             }
         }
-        setItem('historyConfList', JSON.stringify(historyList, null, ''));
+        localStorage.setItem('historyConfList', JSON.stringify(historyList, null, ''));
     }
 
     getHistoryConference() {
-        let tmp = getItem('historyConfList');
-        let historyList = [];
-        if (tmp) {
-            historyList = JSON.parse(tmp);
-        }
+        let tmp = localStorage.getItem('historyConfList');
+        let historyList = JSON.parse(tmp);
+        historyList = historyList ? historyList : [];
         return historyList;
     }
 

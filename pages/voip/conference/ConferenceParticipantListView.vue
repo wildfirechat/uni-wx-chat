@@ -50,7 +50,7 @@ import ConferenceInviteMessageContent from "../../../wfc/av/messages/conferenceI
 import Message from "../../../wfc/messages/message";
 import ForwardType from "../../conversation/message/forward/ForwardType";
 import conferenceManager from "./conferenceManager";
-import avengineKit from "../../../wfc/av/internal/engine.min";
+// import avengineKit from "../../../wfc/av/internal/engine.min";
 
 export default {
     name: "ConferenceParticipantListView",

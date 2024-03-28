@@ -17,7 +17,8 @@
 import Message from "@/wfc/messages/message";
 import store from "@/store";
 import ConversationType from "@/wfc/model/conversationType";
-import avengineKit from "../../../../wfc/av/engine/avenginekit";
+// import avengineKit from "../../../../wfc/av/internal/engine.min";
+import avenginekitproxy from "../../../../wfc/av/engine/avenginekitproxy";
 
 export default {
     name: "ConferenceInviteMessageContentView",
@@ -32,12 +33,9 @@ export default {
 
     methods: {
         showConferenceInfo() {
-            if (avengineKit.startConference) {
+            if (avengineKit.sendConferenceRequest) {
                 let cmc = this.message.messageContent;
-                this.$navigateToPage('/pages/voip/conference/ConferenceInfoPage', {
-                    conferenceId: cmc.callId,
-                    password: cmc.pin,
-                });
+                avenginekitproxy.joinConference(cmc.callId, cmc.audioOnly, cmc.pin, cmc.host, cmc.title, cmc.desc, cmc.audience, cmc.advanced, false, false)
             } else {
                 console.log('not support conference')
                 uni.showToast({

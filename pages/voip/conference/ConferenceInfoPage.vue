@@ -65,6 +65,7 @@
 import wfc from "../../../wfc/client/wfc";
 import conferenceApi from "../../../api/conferenceApi";
 import conferenceManager from "./conferenceManager";
+import avenginekitproxy from "../../../wfc/av/engine/avenginekitproxy";
 
 export default {
     name: "ConferenceInfoPage",
@@ -132,14 +133,9 @@ export default {
         async joinConference() {
             let info = this.conferenceInfo;
             console.log('joinConference', info, this.enableAudio, this.enableVideo);
-            uni.redirectTo({
-                url: `/pages/voip/conference/ConferencePage?conferenceInfo=${JSON.stringify(this.conferenceInfo)}&muteAudio=${!this.enableAudio}&muteVideo=${!this.enableVideo}`,
-                success: (res) => {
-                },
-                fail: (e) => {
-                    console.log('navigate to WebViewPage error', e)
-                }
-            });
+            let audience = !this.enableVideo && !this.enableAudio
+            avenginekitproxy.joinConference(info.conferenceId, false, info.pin, info.owner, info.conferenceTitle, '', audience, info.advance, !this.enableAudio, !this.enableVideo);
+            conferenceManager.conferenceInfo = info;
         },
     },
     computed: {

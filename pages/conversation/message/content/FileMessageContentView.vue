@@ -2,7 +2,7 @@
     <div class="file-message-container"
          @click="clickFile"
          v-bind:class="{out:message.direction === 0}">
-        <image :src="fileIcon" alt=""/>
+        <img :src="fileIcon" alt=""/>
         <div class="flex-column flex-align-start" draggable="true" @dragstart="dragFile($event)">
             <p class="file-name">{{ this.message.messageContent.name }}</p>
             <p class="file-size single-line">{{ size }}</p>
@@ -78,7 +78,7 @@ export default {
         fileIcon() {
             let fileName = this.message.messageContent.name;
             let icon = helper.getFiletypeIcon(fileName.substring(fileName.lastIndexOf('.') + 1))
-            return require("@/static/image/filetypes/" + icon);
+            return "/static/image/filetypes/" + icon;
         },
 
         downloadStats() {

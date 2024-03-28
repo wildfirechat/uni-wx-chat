@@ -30,7 +30,7 @@
 <script>
 import Config from "../../config";
 import store from "../../store";
-import WfcScheme from "../../wfcScheme";
+// import WfcScheme from "../../wfcScheme";
 import wfc from "../../wfc/client/wfc";
 
 export default {

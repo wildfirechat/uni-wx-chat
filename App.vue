@@ -35,6 +35,11 @@ export default {
         store.state.misc.isAppHidden = false;
     },
 
+    mounted() {
+        //屏蔽默认的contextmenu事件
+        document.oncontextmenu = (e) => e.preventDefault();
+    },
+
     onHide: function () {
         console.log("App Hide");
         store.state.misc.isAppHidden = true;

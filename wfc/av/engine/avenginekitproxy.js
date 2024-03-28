@@ -481,7 +481,7 @@ export class AvEngineKitProxy {
     showCallUI(conversation, isConference, options) {
         let type = isConference ? 'conference' : (conversation.type === ConversationType.Single ? 'single' : 'multi');
         this.type = type;
-        let page = isConference ? 'Conference' : (conversation.type === ConversationType.Single ? 'Single' : 'Multi');
+        let page = isConference ? 'conference/ConferencePage' : (conversation.type === ConversationType.Single ? 'Single' : 'Multi');
 
         console.log('showCallUI ....', page)
         uni.navigateTo({

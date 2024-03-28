@@ -439,7 +439,6 @@ export default {
     },
 
     mounted() {
-        avenginekit.setup();
         this.setupSessionCallback();
 
         this.$nextTick(() => {

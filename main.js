@@ -5,14 +5,13 @@ import store from "./store";
 import {createI18n} from 'vue-i18n'
 import picker from "./common/picker";
 import wfc from "./wfc/client/wfc";
-import Config from "./config";
 import forward from "./common/forward";
 // import pttClient from "./wfc/ptt/pttClient";
 // import avengineKit from "./wfc/av/engine/avenginekit";
 import {getItem} from "./pages/util/storageHelper";
-import zhCNLang from  './assets/lang/zh-CN.json'
-import zhTWLang from  './assets/lang/zh-TW.json'
-import enLang from  './assets/lang/en.json'
+import zhCNLang from './assets/lang/zh-CN.json'
+import zhTWLang from './assets/lang/zh-TW.json'
+import enLang from './assets/lang/en.json'
 import mitt from "mitt";
 
 const app = createSSRApp(App)
@@ -113,22 +112,14 @@ app.config.globalProperties.$eventBus = eventBus
 
 app.config.globalProperties.$set = (obj, key, value) => obj[key] = value
 wfc.init();
+// web 端音视频初始化
 // 如果不进行初始化，则无法弹出音视频通话界面，不能进行音视频通话。
-// if (avengineKit.isAVEngineKitEnable()) {
-//     avengineKit.init();
-//     if (Config.ICE_SERVERS) {
-//         Config.ICE_SERVERS.forEach(iceServer => {
-//             avengineKit.addICEServer(iceServer.uri, iceServer.userName, iceServer.password);
-//         })
-//     }
-// }
+// avengineKit.setup();
 // if (pttClient.isPttClientEnable()) {
 //     pttClient.init();
 // }
 store.init();
 
-// app.store = store;
-// app.use(store)
 export function createApp() {
     return {
         app

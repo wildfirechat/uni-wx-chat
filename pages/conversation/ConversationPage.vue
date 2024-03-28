@@ -511,8 +511,8 @@ export default {
             if (this.isScroll) {
                 return;
             }
-            this.contextMenuX = e.touches[0].clientX;
-            this.contextMenuY = e.touches[0].clientY;
+            this.contextMenuX = e.clientX ? e.clientX : e.touches[0].clientX;
+            this.contextMenuY = e.clientY ? e.clientY : e.touches[0].clientY;
 
             this.contextMenuItems = [];
             if (this.isCopyable(message)) {
@@ -699,10 +699,18 @@ export default {
         this.$eventBus.$on('openMessageContextMenu', ([event, message]) => {
             this.showMessageContextMenu(event, message)
         });
-
     },
 
+    unmounted() {
+        this.$eventBus.$off('openMessageContextMenu')
+    },
+
+    beforeUpdate() {
+    },
     updated() {
+        // TODO
+        // FIXME
+        // 未触发，原因未知
         if (!this.sharedConversationState.currentConversationInfo) {
             return;
         }
@@ -750,6 +758,25 @@ export default {
 
         lastMessageId() {
             return this.conversationInfo.lastMessage ? this.conversationInfo.lastMessage.messageId : '';
+        }
+    },
+
+    watch: {
+        lastMessageId(newValue, oldValue) {
+            this.$nextTick(() => {
+                console.log('lastMessageId updated', newValue, this.sharedConversationState.shouldAutoScrollToBottom)
+                if (this.sharedConversationState.shouldAutoScrollToBottom) {
+                    this.scrollToBottom();
+                } else {
+                    // 用户滑动到上面之后，收到新消息，不自动滑动到最下面
+                }
+                if (this.sharedConversationState.currentConversationInfo) {
+                    let unreadCount = this.sharedConversationState.currentConversationInfo.unreadCount;
+                    if (unreadCount.unread > 0) {
+                        store.clearConversationUnreadStatus(this.sharedConversationState.currentConversationInfo.conversation);
+                    }
+                }
+            })
         }
     },
 

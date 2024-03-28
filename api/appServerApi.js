@@ -104,7 +104,6 @@ export class AppServerApi {
 
                     if (appAuthToken) {
                         setItem('authToken-app', appAuthToken);
-                        //wfcUIKit.setupAppServer(Config.APP_SERVER, appAuthToken);
                     }
                     resolve(response.data.result);
                 } else {
