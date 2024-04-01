@@ -236,7 +236,7 @@ export default {
 <style lang="css" scoped>
 
 .conversation-list {
-    height: var(--page-full-height-without-header-and-tabbar);
+    height: 100vh;
     overflow: auto;
     background: #f3f3f3;
 }

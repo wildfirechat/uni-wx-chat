@@ -43,7 +43,7 @@ export default {
     border-radius: 5px;
 }
 
-.sticker-content-container img {
+.sticker-content-container image {
     width: 100px;
     height: 100px;
     max-height: 100px;

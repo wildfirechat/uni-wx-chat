@@ -730,7 +730,7 @@ export default {
     align-items: center;
 }
 
-.wf-stickers-container .category img {
+.wf-stickers-container .category image{
     width: 40px;
     height: 40px;
     padding: 5px;
@@ -739,7 +739,7 @@ export default {
     object-fit: contain;
 }
 
-.wf-stickers-container .category img.active {
+.wf-stickers-container .category image.active {
     background: lightgrey;
 }
 
@@ -758,6 +758,7 @@ export default {
 
 .sticker-item {
     height: 33%;
+    width: auto;
     aspect-ratio: 1/1;
     padding: 8rpx;
     border-radius: 5px;

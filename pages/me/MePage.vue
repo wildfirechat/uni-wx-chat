@@ -47,7 +47,7 @@ export default {
             clear();
             uni.reLaunch(
                 {
-                    url:'/pages/login/loginPage'
+                    url: '/pages/login/loginPage'
                 }
             );
         },
@@ -59,7 +59,7 @@ export default {
                 }
             });
         },
-        showApiTest(){
+        showApiTest() {
             uni.navigateTo({
                 url: '/pages/misc/ApiTestPage',
                 fail: (e) => {
@@ -79,8 +79,9 @@ export default {
     flex-direction: column;
     align-items: center;
     width: 100%;
-    height: var(--page-full-height-without-header-and-tabbar);
+    height: 100vh;
     background: #fafafa;
+    padding: 10px;
 }
 
 .user-info {

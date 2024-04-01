@@ -71,7 +71,7 @@ export default {
                 }
             });
         },
-        showConferencePortal(){
+        showConferencePortal() {
             uni.navigateTo({
                 url: '/pages/voip/conference/ConferencePortalPage',
                 fail: (e) => {
@@ -98,9 +98,10 @@ export default {
     flex-direction: column;
     align-items: center;
     width: 100%;
-    height: var(--page-full-height-without-header-and-tabbar);
+    height: 100vh;
     background: #fafafa;
     overflow: hidden;
+    padding: 10px;
 }
 
 .item {
