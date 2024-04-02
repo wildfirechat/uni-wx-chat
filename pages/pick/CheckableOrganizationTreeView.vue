@@ -130,7 +130,7 @@ export default {
     background: #d6d6d6;
 }
 
-.organization-item img {
+.organization-item image {
     width: 40px;
     height: 40px;
     border-radius: 5px;

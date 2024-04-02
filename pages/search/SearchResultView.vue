@@ -301,7 +301,7 @@ export default {
 }
 
 
-.search-result-category-container label {
+.search-result-category-container > label {
     color: #828282;
     background: #EDEDED;
     display: block;
@@ -322,13 +322,13 @@ export default {
     background-color: #d9d9d9;
 }
 
-.search-result-item img {
+.search-result-item image {
     width: 34px;
     height: 34px;
     border-radius: 2px;
 }
 
-.search-result-item span {
+.search-result-item label {
     font-size: 14px;
     padding-left: 10px;
 }

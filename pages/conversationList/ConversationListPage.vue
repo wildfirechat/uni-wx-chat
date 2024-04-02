@@ -1,6 +1,9 @@
 <template>
     <view class="conversation-list" @scroll="onScroll">
         <view v-if="connectionStatusDesc || unread === undefined" style="text-align: center; padding: 5px 0">{{ connectionStatusDesc }}</view>
+        <view v-else class="search-input-menu-container">
+            <input class="input" type="text" :placeholder="$t('common.search')" @click="showSearchPortal">
+        </view>
         <uni-list :border="true" @scroll="onScroll">
             <view
                 class="conversation-item"
@@ -25,7 +28,6 @@ import store from "../../store";
 import wfc from "../../wfc/client/wfc";
 import ConnectionStatus from "../../wfc/client/connectionStatus";
 import {getItem} from "../util/storageHelper";
-import organizationServerApi from "../../api/organizationServerApi";
 
 export default {
     name: 'ConversationListPage',
@@ -163,6 +165,9 @@ export default {
                     break;
 
             }
+        },
+        showSearchPortal() {
+            this.$navigateToPage('/pages/search/SearchPortalPage');
         }
     },
     activated() {
@@ -232,6 +237,26 @@ export default {
 </script>
 
 <style lang="css" scoped>
+
+.search-input-menu-container {
+    width: 100%;
+    height: 45px;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    background: white;
+}
+
+.search-input-menu-container input {
+    height: 35px;
+    box-sizing: border-box;
+    margin: 5px 10px;
+    flex: 1;
+    text-align: center;
+    border-radius: 5px;
+    background-color: #f3f3f3;
+}
 
 .conversation-list {
     height: 100vh;

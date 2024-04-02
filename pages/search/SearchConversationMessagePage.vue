@@ -116,7 +116,7 @@ export default {
     background-color: #d9d9d9;
 }
 
-.search-result-item img {
+.search-result-item image {
     width: 34px;
     height: 34px;
     border-radius: 2px;
