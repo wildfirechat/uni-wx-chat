@@ -427,7 +427,6 @@ let store = {
         let index = conversationState.conversationInfoList.findIndex(info => info.conversation.equal(conversation));
         if (index >= 0) {
             //Object.assign(conversationState.conversationInfoList[index], conversationInfo);
-            console.log('xxxxxxx convu ', conversationInfo.unreadCount)
             conversationState.conversationInfoList.splice(index, 1, conversationInfo);
         } else {
             if (insertIfNoExist && conversation.type !== ConversationType.ChatRoom) {

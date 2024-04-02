@@ -71,9 +71,9 @@ export default {
     border-radius: 5px;
 }
 
-.image-content-container img {
-    max-height: 300px;
-    max-width: 300px;
+.image-content-container image {
+    max-height: 250px;
+    max-width: 250px;
     border-radius: 5px;
     overflow: hidden;
     object-fit: scale-down;
