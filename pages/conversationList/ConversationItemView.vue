@@ -87,7 +87,6 @@ export default {
         },
 
         lastMessageContent() {
-            console.log('xxx lastMessageContent')
             let conversationInfo = this.conversationInfo;
             if (conversationInfo.lastMessage && conversationInfo.lastMessage.messageContent) {
                 let senderName = '';
@@ -110,7 +109,6 @@ export default {
         },
 
         unread() {
-            console.log('xxxxxxxx unread')
             let conversationInfo = this.conversationInfo;
             let unreadCount = conversationInfo.unreadCount;
             return unreadCount ? (unreadCount.unread + unreadCount.unreadMention + unreadCount.unreadMentionAll) : 0;
@@ -172,7 +170,7 @@ export default {
     font-style: normal;
     text-align: center;
     right: 8px;
-    top: 8px;
+    top: 20px;
 }
 
 .header .badge.silent {

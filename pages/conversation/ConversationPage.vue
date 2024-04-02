@@ -51,7 +51,7 @@
             </view>
             <!--            <view v-show="!sharedConversationState.enableMessageMultiSelection"-->
             <!--                  class="viewider-handler"></view>-->
-<!--            <chunLei-popups v-model="showContextMenu" :popData="contextMenuItems" @tapPopup="onContextMenuItemSelect" :x="contextMenuX" :y="contextMenuY" direction="column" theme="dark" :triangle="false" dynamic/>-->
+            <chunLei-popups v-model="showContextMenu" :popData="contextMenuItems" @tapPopup="onContextMenuItemSelect" :x="contextMenuX" :y="contextMenuY" direction="column" theme="dark" :triangle="false" dynamic/>
             <MessageInputView :conversationInfo="sharedConversationState.currentConversationInfo"
                               v-show="!sharedConversationState.enableMessageMultiSelection"
                               class="message-input-container"
