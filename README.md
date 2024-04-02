@@ -1,21 +1,20 @@
-# 野火IM 手机Web平台Demo
+# 野火IM 微信小程序平台Demo
 
-支持Android 和 iOS 手机浏览器，支持微信浏览器
 
 ## 前置说明
 
-1. 本项目所使用的`Web SDK`是需要付费的，且依赖于`专业版 IM-Server`，价格请参考[费用详情](https://docs.wildfirechat.cn/price/)
-2. `Web SDK`和`专业版 IM-Server`都支持试用，具体请参考[试用说明](https://docs.wildfirechat.cn/trial/)
-3. 本项目默认只能连接到官方服务，购买或申请试用之后，替换`Web SDK`，即可连到自行部署的服务
+1. 本项目所使用的`小程序 SDK`是需要付费的，且依赖于`专业版 IM-Server`，价格请参考[费用详情](https://docs.wildfirechat.cn/price/)
+2. `小程序 SDK`和`专业版 IM-Server`都支持试用，具体请参考[试用说明](https://docs.wildfirechat.cn/trial/)
+3. 本项目默认只能连接到官方服务，购买或申请试用之后，替换`小程序 SDK`，即可连到自行部署的服务
 
 ## 开发
 
 1. 运行```npm install```命令
-2. HBuilderX，运行到浏览器，Chrome
+2. HBuilderX，运行到微信开发者工具
 
 ## 打包
 
-1. HBuilderX，发行，网站-PC Web或手机H5
+1. HBuilderX，发行，小程序-微信(仅适用于 uni-app)
 
 ## 常见问题说明
 
