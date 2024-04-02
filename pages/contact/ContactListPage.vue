@@ -5,22 +5,22 @@
                 <div @click="showNewFriends" class="category-item-container">
                     <image src="/static/image/icon/ic_new_friend.png"/>
                     <div class="category-item">
-                        <span class="title">{{ $t('contact.new_friend') }}</span>
-                        <span class="desc" style="color: red" v-if="sharedContactState.unreadFriendRequestCount > 0">{{ sharedContactState.unreadFriendRequestCount }}</span>
+                        <text class="title">{{ $t('contact.new_friend') }}</text>
+                        <text class="desc" style="color: red" v-if="sharedContactState.unreadFriendRequestCount > 0">{{ sharedContactState.unreadFriendRequestCount }}</text>
                     </div>
                 </div>
                 <div @click="showGroups" class="category-item-container">
                     <image src="/static/image/icon/ic_group_chat.png"/>
                     <div class="category-item">
-                        <span class="title">{{ $t('contact.group') }}</span>
-                        <span class="desc">{{ sharedContactState.favGroupList.length }}</span>
+                        <text class="title">{{ $t('contact.group') }}</text>
+                        <text class="desc">{{ sharedContactState.favGroupList.length }}</text>
                     </div>
                 </div>
                 <div @click="showChannels" class="category-item-container">
                     <image src="/static/image/icon/ic_channel_1.png"/>
                     <div class="category-item">
-                        <span class="title">{{ $t('contact.channel') }}</span>
-                        <span class="desc">{{ sharedContactState.channelList.length }}</span>
+                        <text class="title">{{ $t('contact.channel') }}</text>
+                        <text class="desc">{{ sharedContactState.channelList.length }}</text>
                     </div>
                 </div>
                 <OrganizationListView/>
@@ -160,7 +160,7 @@ export default {
     justify-content: space-between;
 }
 
-.category-item span:last-of-type {
+.category-item text:last-of-type {
     margin-right: 15px;
 }
 

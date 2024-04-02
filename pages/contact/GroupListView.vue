@@ -2,7 +2,7 @@
     <div>
         <div class="group-item" v-for="(group, index) in sharedContactState.favGroupList" :key="index" @click="showGroup(group)">
             <img class="avatar" :src="group.portrait">
-            <span class="single-line">{{ group.name }}</span>
+            <text class="single-line">{{ group.name }}</text>
         </div>
     </div>
 
@@ -50,7 +50,7 @@ export default {
     background-color: #d6d6d6;
 }
 
-.group-item span {
+.group-item text {
     margin-left: 10px;
 }
 
