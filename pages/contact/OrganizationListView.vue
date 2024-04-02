@@ -4,8 +4,8 @@
             <li v-for="(organization, index) in rootOrganizations" :key="index" @click="showOrganization(organization)">
                 <div class="organization-item"
                      v-bind:class="{active: sharedContactState.currentOrganization && sharedContactState.currentOrganization.id === organization.id}">
-                    <img class="avatar" :src="organization.portrait ? organization.portrait : defaultPortraitUrl">
-                    <span class="single-line">{{ organization.name }}</span>
+                    <image class="avatar" :src="organization.portrait ? organization.portrait : defaultPortraitUrl"/>
+                    <text class="single-line">{{ organization.name }}</text>
                 </div>
             </li>
         </ul>
@@ -17,6 +17,8 @@
 import store from "../../store";
 import organizationServerApi from "../../api/organizationServerApi";
 import Config from "../../config";
+import wfc from "../../wfc/client/wfc";
+import ConnectionStatus from "../../wfc/client/connectionStatus";
 
 export default {
     name: "OrganizationListView",
@@ -33,10 +35,20 @@ export default {
             .then(orgs => {
                 this.rootOrganizations = orgs;
             }).catch(reason => {
-
+            if (reason.errorCode === 13 && wfc.getConnectionStatus() === ConnectionStatus.ConnectionStatusConnected) {
+                this.login()
+            }
         })
     },
     methods: {
+        login() {
+            organizationServerApi.login()
+                .then(() => {
+                    organizationServerApi.getRootOrganization().then(orgs => {
+                        this.rootOrganizations = orgs
+                    })
+                })
+        },
         showOrganization(organization) {
             store.setCurrentOrganization(organization)
             uni.navigateTo({
@@ -69,7 +81,7 @@ export default {
     background-color: #fafafa;
 }
 
-.organization-item span {
+.organization-item text {
     margin-left: 10px;
 }
 

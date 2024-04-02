@@ -161,15 +161,15 @@ export class OrganizationServerApi {
                         if (res.data.code === 0) {
                             resolve(res.data.result);
                         } else {
-                            throw new OrganizationServerError(res.data.code, res.data.message)
+                            reject(new OrganizationServerError(res.data.code, res.data.message))
                         }
                     } else {
-                        throw new Error('request error, status code: ' + res.status)
+                        reject(new Error('request error, status code: ' + res.status))
                     }
                 },
                 fail: (res) => {
                     console.log('fail', res);
-                    throw new Error('request error: ' + res)
+                    reject(new Error('request error: ' + res))
                 }
             });
         });

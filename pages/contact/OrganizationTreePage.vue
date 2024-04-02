@@ -1,11 +1,11 @@
 <template>
     <section class="organization-tree-container">
         <nav class="breadcrumb">
-            <ul>
-                <li v-for="org in currentOrganizationPathList" :key="org.id">
-                    <a href="#" @click="loadAndShowOrganization(org)">{{ org.name }}</a>
-                </li>
-            </ul>
+            <view>
+                <view v-for="org in currentOrganizationPathList" :key="org.id">
+                    <text href="#" @click="loadAndShowOrganization(org)">{{ org.name }}</text>
+                </view>
+            </view>
         </nav>
         <div class="member-list-container">
             <ul>
@@ -102,10 +102,10 @@ export default {
 }
 
 .breadcrumb {
-    padding: 10px 0 0 10px;
+    padding: 10px 0 10px 10px;
 }
 
-.breadcrumb ul {
+.breadcrumb view {
     display: flex;
     flex-wrap: wrap;
     list-style: none;
@@ -113,23 +113,23 @@ export default {
     padding: 0;
 }
 
-.breadcrumb a {
+.breadcrumb view {
     text-decoration: none;
     font-size: 13px;
 }
 
-.breadcrumb li:not(:last-child)::after {
+.breadcrumb view:not(:last-child)::after {
     display: inline-block;
     margin: 0 10px;
     color: #8f959f;
     content: ">";
 }
 
-.breadcrumb li:not(:last-child) a {
+.breadcrumb view:not(:last-child) a {
     color: #4168e0;
 }
 
-.breadcrumb li:last-child a {
+.breadcrumb view:last-child a {
     color: #8f959f;
     pointer-events: none;
 }
@@ -152,7 +152,7 @@ export default {
     background: #d6d6d6;
 }
 
-.organization-item img {
+.organization-item image {
     width: 40px;
     height: 40px;
     border-radius: 5px;

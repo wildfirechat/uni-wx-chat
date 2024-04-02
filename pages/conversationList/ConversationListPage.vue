@@ -180,7 +180,6 @@ export default {
                     desc = '正在同步...';
                     break;
                 case ConnectionStatus.ConnectionStatusConnected:
-                    organizationServerApi.login().then(r => console.log('org login result', r)).catch(reason => console.log('org login fail ', reason));
                     desc = '';
                     break;
                 case ConnectionStatus.ConnectionStatusUnconnected:
@@ -223,7 +222,7 @@ export default {
                     index: 0
                 })
             }
-        }
+        },
     },
 
     components: {
