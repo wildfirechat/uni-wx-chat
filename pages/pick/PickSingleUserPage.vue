@@ -24,27 +24,15 @@ import UserListView from "../user/UserListView.vue";
 export default {
     name: "PickSingleUserPage",
     props: {
-        users: {
-            type: Array,
-            required: false,
-        },
-        title: {
-            type: String,
-            required: false,
-            default: '',
-        },
-        showCategoryLabel: {
-            type: Boolean,
-            required: false,
-            default: true,
-        }
-
     },
     data() {
         return {
             sharedPickState: store.state.pick,
             filterQuery: '',
             scrollLeft: 0,
+            users: [],
+            title: '',
+            showCategoryLabel: false,
         }
     },
 
