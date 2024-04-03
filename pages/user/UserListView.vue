@@ -5,7 +5,7 @@
                 <div v-if="showCategoryLabel" class="label"
                      :style="paddingStyle"
                      v-bind:class="{sticky:enableCategoryLabelSticky}">
-                    <p>{{ groupedUser.category.toUpperCase() }}</p>
+                    <text>{{ groupedUser.category.toUpperCase() }}</text>
                 </div>
                 <uni-list style="width: 100%">
                     <view v-for="(user) in groupedUser.users" :key="user.uid">
@@ -18,8 +18,8 @@
                              @click.stop="clickUserItem(user)">
                             <img class="avatar" :src="user.portrait" alt="" @error="imgUrlAlt">
                             <div style="padding-left: 10px">
-                                <p class="single-line"> {{ user._displayName ? user._displayName : user.displayName }}</p>
-                                <p v-if="user._userOnlineStatusDesc" class="single-line user-online-status"> {{ user._userOnlineStatusDesc }}</p>
+                                <view class="single-line"> {{ user._displayName ? user._displayName : user.displayName }}</view>
+                                <view v-if="user._userOnlineStatusDesc" class="single-line user-online-status"> {{ user._userOnlineStatusDesc }}</view>
                             </div>
                         </div>
 
@@ -181,7 +181,7 @@ export default {
     background-color: #fafafa;
 }
 
-.contact-item .label p {
+.contact-item .label text {
     padding: 5px 5px 5px 0;
 }
 

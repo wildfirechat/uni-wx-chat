@@ -1,6 +1,6 @@
 <template>
     <view class="search-portal-container">
-        <input class="input" type="text" v-model="keyword" :placeholder="$t('common.search')" @input="search">
+        <input class="input" type="text" focus="true" v-model="keyword" :placeholder="$t('common.search')" @input="search">
         <SearchResultView :query="keyword" :options="options" v-if="keyword && keyword.trim()"/>
         <view v-else class="tip-container">
             <text>请输入关键字进行搜索</text>
