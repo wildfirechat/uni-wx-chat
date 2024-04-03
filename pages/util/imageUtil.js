@@ -248,7 +248,6 @@ function mergeImages(sources = [], options = {}) {
 }
 
 
-
 async function genGroupPortrait(groupMemberUsers) {
     let groupMemberPortraits = [];
     for (let i = 0; i < Math.min(9, groupMemberUsers.length); i++) {
@@ -257,84 +256,78 @@ async function genGroupPortrait(groupMemberUsers) {
     return await mergeImages(groupMemberPortraits);
 }
 
-// return {data uri, width, height}
-function imageThumbnail(file) {
+// return {data uri, orgWidth, orgHeight}
+function imageThumbnail(filePath) {
     return new Promise((resolve, reject) => {
-        var img = new Image();
-        img.setAttribute('crossOrigin', 'anonymous');
-        img.onload = () => {
-            let resizedCanvas = resizeImage.resize2Canvas(img, 200, 200);
-            resizedCanvas.toBlob((blob) => {
-                var reader = new FileReader();
-                reader.readAsDataURL(blob);
-                reader.onloadend = () => {
-                    let base64data = reader.result;
-                    resolve({thumbnail: base64data, width: img.naturalWidth, height: img.naturalHeight});
-                }
-                reader.onerror = () => {
-                    resolve(null);
-                }
-            }, 'image/jpeg', 0.4);
-        };
-        img.onerror = () => {
-            resolve(null);
-        }
-        if (file.path) {
-            if (file.path.startsWith('/')) {
-                img.src = 'local-resource://' + (file.path.indexOf(file.name) > -1 ? file.path : file.path + file.name); // local image url
-            } else {
-                img.src = file.path;
-            }
-        } else {
-            let reader = new FileReader();
-            reader.onload = function (event) {
-                img.src = event.target.result;
-            };
-            reader.readAsDataURL(file);
-        }
-    });
-}
+            wx.getImageInfo({
+                src: filePath,
+                success: (res) => {
+                    //---------利用canvas压缩图片--------------
+                    let ratio = 2;
+                    let imageWidth = res.width;
+                    let imageHeight = res.height;
+                    let canvasWidth = res.width //图片原始长宽
+                    let canvasHeight = res.height
+                    while (canvasWidth > 200 || canvasHeight > 200) {// 保证宽高在200以内
+                        canvasWidth = Math.trunc(res.width / ratio)
+                        canvasHeight = Math.trunc(res.height / ratio)
+                        ratio++;
+                    }
+                    console.log('getImageinfo', filePath, res)
 
-// return {data uri, width, height}
-function videoThumbnail(file) {
-    return new Promise(
-        (resolve, reject) => {
-            let video = document.getElementById('bgvid');
-            video.onplay = () => {
-                console.log('------------ video onplay');
+                    wx.createSelectorQuery()
+                        .select('#myCanvas') // 在 WXML 中填入的 id
+                        .fields({node: true, size: true})
+                        .exec(qres => {
+                            const canvas = qres[0].node
+                            canvas.width = canvasWidth;
+                            canvas.height = canvasHeight;
 
-                var canvas = document.createElement("canvas");
-                canvas.width = video.videoWidth;
-                canvas.height = video.videoHeight;
-                canvas.getContext('2d')
-                    .drawImage(video, 0, 0, canvas.width, canvas.height);
-                var img = document.createElement("img");
-                img.src = canvas.toDataURL();
-                img.onload = () => {
-                    let resizedCanvas = resizeImage.resize2Canvas(img, 200, 200);
-                    resizedCanvas.toBlob((blob) => {
-                        var reader = new FileReader();
-                        reader.readAsDataURL(blob);
-                        reader.onloadend = () => {
-                            let base64data = reader.result;
-                            resolve({thumbnail: base64data, width: video.videoWidth, height: video.videoHeight});
-                            video.src = null;
-                        };
-                        reader.onerror = () => {
-                            resolve(null);
-                        }
-                    }, 'image/jpeg', 0.4);
-                };
-                img.onerror = () => {
-                    resolve(null);
-                };
-            };
-            video.onerror = () => {
-                resolve(null);
-            };
-            _loadVideo(file)
-            console.log('----------', video);
-        });
+                            const ctx = canvas.getContext('2d')
+
+                            const image = canvas.createImage()
+                            image.onload = () => {
+                                ctx.drawImage(
+                                    image,
+                                    0,
+                                    0,
+                                    canvasWidth,
+                                    canvasHeight,
+                                )
+                                //留一定的时间绘制canvas
+                                setTimeout(() => {
+                                    wx.canvasToTempFilePath({
+                                        canvas: canvas,
+                                        width: canvasWidth,
+                                        height: canvasHeight,
+                                        fileType: 'jpg',
+                                        quality: 0.5,
+                                        success: (res) => {
+                                            let tempFilePath = res.tempFilePath;
+                                            const fs = wx.getFileSystemManager()
+                                            // 读取文件， base64 格式
+                                            let base64Str = fs.readFileSync(tempFilePath, 'base64')
+                                            resolve(base64Str, imageWidth, imageHeight)
+                                            console.log('image thumbnail size', base64Str.length, imageWidth, imageHeight, canvasWidth, canvasHeight)
+
+                                        },
+                                        fail: (res) => {
+                                            console.log('canvasToTempFilePath error', res.errMsg)
+                                            resolve()
+                                        }
+                                    })
+                                }, 100)
+                            }
+                            image.src = res.path;
+                        })
+                },
+                fail: (res) => {
+                    console.log('getImageInfo error', res.errMsg)
+                    resolve()
+                }
+            })
+        }
+    )
 }
 
 function _loadVideo(file) {
@@ -410,4 +403,4 @@ function scaleDown(width, height, maxWidth, maxHeight) {
     return {width: Math.ceil(scaledWidth), height: Math.ceil(scaledHeight)};
 }
 
-export {mergeImages, genGroupPortrait, videoThumbnail, videoDuration, imageThumbnail, fileFromDataUri, scaleDown};
+export {mergeImages, genGroupPortrait, videoDuration, imageThumbnail, fileFromDataUri, scaleDown};

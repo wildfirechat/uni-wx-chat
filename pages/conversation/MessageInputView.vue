@@ -69,6 +69,7 @@ import PttAudioInputView from "./message/PttAudioInputView.vue";
 import Draft from "../util/draft";
 // import pttClient from "../../wfc/ptt/pttClient";
 import avenginekitproxy from "../../wfc/av/engine/avenginekitproxy";
+import {imageThumbnail} from "../util/imageUtil";
 
 export default {
     name: "MessageInputView",
@@ -353,8 +354,17 @@ export default {
 
                         // #ifdef MP-WEIXIN
                         filePath = e.tempFilePaths[0]
+                        imageThumbnail(filePath)
+                            .then((thumbnail, width, height) => {
+                                store.sendFile(this.conversationInfo.conversation, filePath, width, height, thumbnail);
+                            })
+                            .catch(reason => {
+                                console.error(reason)
+                            })
                         // #endif
+                        // #ifndef MP-WEIXIN
                         store.sendFile(this.conversationInfo.conversation, filePath);
+                        // #endif
                     })
                 }
             })
@@ -393,7 +403,7 @@ export default {
                 sizeType: ['original', 'compressed'],
                 success: async (e) => {
                     console.log('choose video', e);
-                    let duration = e.duration;
+                    let duration = Math.ceil(e.duration);
                     let path = e.tempFilePath;
                     let filePath;
                     // #ifdef APP-PLUS
@@ -414,8 +424,17 @@ export default {
                     // #ifdef MP-WEIXIN
                     filePath = path;
                     // 缩略图 e.thumbTempFilePath
+                    imageThumbnail(e.thumbTempFilePath)
+                        .then((thumbnail, width, height) => {
+                            store.sendFile(this.conversationInfo.conversation, filePath, width, height, thumbnail, duration);
+                        })
+                        .catch(reason => {
+                            console.error(reason)
+                        })
                     // #endif
+                    // #ifndef MP-WEIXIN
                     store.sendFile(this.conversationInfo.conversation, filePath, duration);
+                    // #endif
                 }
             })
         },
@@ -739,7 +758,7 @@ export default {
     align-items: center;
 }
 
-.wf-stickers-container .category image{
+.wf-stickers-container .category image {
     width: 40px;
     height: 40px;
     padding: 5px;

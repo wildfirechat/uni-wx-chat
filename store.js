@@ -796,9 +796,13 @@ let store = {
      *
      * @param conversation
      * @param {File | string} file html File 类型或者url，绝对路径只在electron里面生效
+     * @param {number} imageWidth 图片宽度
+     * @param {number} imageHeight 图片高度
+     * @param {string} thumbnail 图片或视频缩略图
+     * @param {number} videoDuration 视频时长
      * @return {Promise<boolean>}
      */
-    async sendFile(conversation, file) {
+    async sendFile(conversation, file, imageWidth = 0, imageHeight = 0, thumbnail = '', videoDuration) {
         if (file.size && file.size > 100 * 1024 * 1024) {
             if (!wfc.isSupportBigFilesUpload() || conversation.type === ConversationType.SecretChat) {
                 console.log('file too big, and not support upload big file')
@@ -836,9 +840,13 @@ let store = {
         switch (messageContentmediaType) {
             case MessageContentMediaType.Image:
                 messageContent = new ImageMessageContent(fileOrLocalPath, remotePath);
+                messageContent.imageWidth = imageWidth || undefined;
+                messageContent.imageHeight = imageHeight || undefined;
+                messageContent.thumbnail = thumbnail || undefined
                 break;
             case MessageContentMediaType.Video:
-                messageContent = new VideoMessageContent(fileOrLocalPath, remotePath, '', 0);
+                messageContent = new VideoMessageContent(fileOrLocalPath, remotePath, thumbnail, videoDuration);
+                messageContent.thumbnail = thumbnail || undefined
                 break;
             case MessageContentMediaType.File:
                 messageContent = new FileMessageContent(fileOrLocalPath, remotePath);

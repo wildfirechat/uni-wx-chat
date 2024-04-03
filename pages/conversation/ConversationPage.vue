@@ -59,6 +59,7 @@
             />
             <MultiSelectActionView v-show="sharedConversationState.enableMessageMultiSelection"/>
         </view>
+        <canvas id="myCanvas" type="2d" style="width:200px;height:200px;position: absolute;left:-1100px;top:-1000px;"></canvas>
     </view>
 </template>
 

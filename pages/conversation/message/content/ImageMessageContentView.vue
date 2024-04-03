@@ -1,7 +1,7 @@
 <template>
     <div class="image-content-container">
         <img ref="thumbnail" v-show="imageLoaded === false" @click="preview(message)"
-             v-bind:src="'data:video/jpeg;base64,' + message.messageContent.thumbnail">
+             v-bind:src="'data:image/jpeg;base64,' + message.messageContent.thumbnail">
         <img ref="img" v-show="imageLoaded" @click="preview(message)" @load="onImageLoaded"
              draggable="true"
              v-bind:src="message.messageContent.remotePath">

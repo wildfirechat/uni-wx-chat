@@ -34,7 +34,7 @@ export default {
             if (this.message.status === MessageStatus.Sending){
                 return Config.DEFAULT_VIDEO_POSTER;
             }else {
-                return 'data:video/jpeg;base64,' + this.message.messageContent.thumbnail;
+                return 'data:image/jpeg;base64,' + this.message.messageContent.thumbnail;
             }
         },
         preview() {
@@ -42,7 +42,7 @@ export default {
             if (this.isInCompositeView) {
                 this.$parent.previewCompositeMessage(message.messageUid);
             } else {
-                console.log('preview', message.messageContent.remotePath);
+                console.log('preview', message, message.messageContent.remotePath);
                 uni.navigateTo({
                     url: `/pages/misc/PreviewVideoPage?url=${encodeURIComponent(message.messageContent.remotePath)}`,
                     fail: (e) => {
