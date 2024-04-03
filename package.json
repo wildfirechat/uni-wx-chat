@@ -13,7 +13,6 @@
     "anchorme": "^2.1.2",
     "base64-arraybuffer": "^1.0.2",
     "benz-amr-recorder": "^1.1.5",
-    "detectrtc": "^1.4.1",
     "emojilib": "^3.0.6",
     "events": "^3.3.0",
     "long": "^5.2.0",
