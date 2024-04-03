@@ -333,7 +333,7 @@ export default {
                 sourceType: ['album', 'camera'],
                 sizeType: ['original', 'compressed'],
                 success: (e) => {
-                    console.log('choose image', e.tempFilePaths);
+                    console.log('choose image', e.tempFilePaths, e);
                     e.tempFilePaths.forEach(async path => {
                         let filePath;
                         // #ifdef APP-PLUS
@@ -349,6 +349,10 @@ export default {
                                 let name = `${new Date().getTime()}.${blob.type.substring(blob.type.lastIndexOf('/') + 1)}`;
                                 return new File([blob], name)
                             })
+                        // #endif
+
+                        // #ifdef MP-WEIXIN
+                        filePath = e.tempFilePaths[0]
                         // #endif
                         store.sendFile(this.conversationInfo.conversation, filePath);
                     })
@@ -405,6 +409,11 @@ export default {
                             let name = `${new Date().getTime()}.${blob.type.substring(blob.type.lastIndexOf('/') + 1)}`;
                             return new File([blob], name)
                         })
+                    // #endif
+
+                    // #ifdef MP-WEIXIN
+                    filePath = path;
+                    // 缩略图 e.thumbTempFilePath
                     // #endif
                     store.sendFile(this.conversationInfo.conversation, filePath, duration);
                 }
