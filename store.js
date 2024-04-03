@@ -4,9 +4,9 @@ import EventType from "./wfc/client/wfcEvent";
 import ConversationType from "./wfc/model/conversationType";
 import {eq, gt, numberValue, stringValue} from "./wfc/util/longUtil";
 import helper from "./pages/util/helper";
-import pinyin from 'pinyin/esm/pinyin'
+//import pinyin from './vendor/pinyin/esm/pinyin'
+const pinyin = (han) => [han]
 import GroupType from "./wfc/model/groupType";
-// import {imageThumbnail, videoDuration, videoThumbnail} from "./ui/util/imageUtil";
 import MessageContentMediaType from "./wfc/messages/messageContentMediaType";
 import Conversation from "./wfc/model/conversation";
 import MessageContentType from "./wfc/messages/messageContentType";

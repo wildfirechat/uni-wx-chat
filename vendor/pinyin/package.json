@@ -1,34 +1,27 @@
 {
-  "_args": [
-    [
-      "pinyin@2.9.1",
-      "/Users/jiangecho/bitbucket/wildfirechat/vue-chat-pc"
-    ]
-  ],
-  "_from": "pinyin@2.9.1",
-  "_id": "pinyin@2.9.1",
+  "_from": "pinyin@^4.0.0-alpha.0",
+  "_id": "pinyin@4.0.0-alpha.0",
   "_inBundle": false,
-  "_integrity": "sha1-RXDT4D8UMPacCNQWawhzkskidxg=",
+  "_integrity": "sha512-hdxO/2RuLWarhLaIcGKdXjkFZ0hFr3W/Yrvrd0YPxuIafixMZSAa4jvxskYLgYHE8OkOXkGsxMsEScwGzqKe3g==",
   "_location": "/pinyin",
-  "_phantomChildren": {
-    "keypress": "0.1.0"
-  },
+  "_phantomChildren": {},
   "_requested": {
-    "type": "version",
+    "type": "range",
     "registry": true,
-    "raw": "pinyin@2.9.1",
+    "raw": "pinyin@^4.0.0-alpha.0",
     "name": "pinyin",
     "escapedName": "pinyin",
-    "rawSpec": "2.9.1",
+    "rawSpec": "^4.0.0-alpha.0",
     "saveSpec": null,
-    "fetchSpec": "2.9.1"
+    "fetchSpec": "^4.0.0-alpha.0"
   },
   "_requiredBy": [
     "/"
   ],
-  "_resolved": "https://registry.npm.taobao.org/pinyin/download/pinyin-2.9.1.tgz",
-  "_spec": "2.9.1",
-  "_where": "/Users/jiangecho/bitbucket/wildfirechat/vue-chat-pc",
+  "_resolved": "https://registry.npmmirror.com/pinyin/-/pinyin-4.0.0-alpha.0.tgz",
+  "_shasum": "cb5fd10445509d161821d3a4e08daca24aad3188",
+  "_spec": "pinyin@^4.0.0-alpha.0",
+  "_where": "/Users/jiangecho/bitbucket/wildfirechat/uni-h5-chat",
   "author": {
     "name": "闲耘",
     "email": "hotoo.cn@gmail.com"
@@ -36,36 +29,71 @@
   "bin": {
     "pinyin": "bin/pinyin"
   },
-  "browser": "lib/web-pinyin.js",
+  "browser": {
+    "./dist/pinyin.js": "./lib/pinyin-web.js",
+    "./dist/pinyin.mjs": "./esm/pinyin-web.js"
+  },
   "bugs": {
     "url": "https://github.com/hotoo/pinyin/issues"
   },
+  "bundleDependencies": false,
   "dependencies": {
-    "commander": "~1.1.1",
-    "@node-rs/jieba": "^0.6.0",
-    "object-assign": "^4.0.1"
+    "commander": "~1.1.1"
   },
+  "deprecated": false,
   "description": "汉语拼音转换工具。",
   "devDependencies": {
+    "@babel/preset-env": "^7.15.6",
+    "@babel/preset-typescript": "^7.15.0",
+    "@rollup/plugin-commonjs": "^17.1.0",
+    "@rollup/plugin-json": "^4.1.0",
+    "@rollup/plugin-node-resolve": "^11.2.0",
+    "@types/jest": "^27.0.2",
+    "@typescript-eslint/eslint-plugin": "^5.14.0",
+    "@typescript-eslint/parser": "^5.14.0",
+    "aurl": "^1.2.0",
+    "aws-sdk": "^2.1011.0",
+    "beautify-benchmark": "^0.2.4",
     "benchmark": "~1.0.0",
-    "eslint": "~0.24.0",
-    "expect.js": "~0.3.1",
-    "istanbul": "~0.3.17",
-    "mocha": "1.17.1",
-    "request": "~2.68.0"
+    "dumi": "^1.1.30",
+    "eslint": "^8.11.0",
+    "eslint-config-prettier": "^8.5.0",
+    "eslint-import-resolver-typescript": "^2.5.0",
+    "eslint-plugin-prettier": "^4.0.0",
+    "gh-pages": "^3.2.3",
+    "jest": "^27.2.3",
+    "mock-aws-s3": "^4.0.2",
+    "nock": "^13.1.4",
+    "npx": "^10.2.2",
+    "prettier": "^2.6.0",
+    "react-json-view": "^1.21.3",
+    "request": "~2.68.0",
+    "rollup": "2.60.0",
+    "rollup-plugin-alias": "^2.2.0",
+    "rollup-plugin-cleanup": "^3.2.1",
+    "rollup-plugin-terser": "^7.0.2",
+    "rollup-plugin-typescript2": "^0.34.1",
+    "ts-node": "^10.5.0",
+    "typescript": "^4.4.4"
   },
   "directories": {
     "example": "examples",
-    "test": "tests"
+    "test": "test"
+  },
+  "engines": {
+    "install-node": "^18.0.0"
   },
   "files": [
+    "package.json",
+    "build/",
     "bin",
     "data",
     "lib",
-    "index.js",
-    "src"
+    "esm",
+    "amd",
+    "index.js"
   ],
-  "homepage": "http://pinyin.hotoo.me/",
+  "homepage": "https://pinyin.js.org/",
   "keywords": [
     "拼音",
     "汉语",
@@ -74,31 +102,44 @@
     "Pinyin"
   ],
   "license": "MIT",
-  "main": "lib/index.js",
+  "main": "./dist/pinyin.js",
+  "module": "./dist/pinyin.mjs",
   "name": "pinyin",
-  "optionalDependencies": {
-    "nodejieba": "^2.2.1"
+  "peerDependencies": {
+    "@node-rs/jieba": "^1.6.0",
+    "nodejieba": "2.5.2",
+    "segmentit": "^2.0.3"
   },
+  "peerDependenciesMeta": {
+    "@node-rs/jieba": {
+      "optional": true
+    },
+    "nodejieba": {
+      "optional": true
+    },
+    "segmentit": {
+      "optional": true
+    }
+  },
+  "publishConfig": {
+    "registry": "https://registry.npmjs.org/"
+  },
+  "registry": "https://registry.npmmirror.com",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/hotoo/pinyin.git"
   },
   "scripts": {
-    "test": "make test"
+    "build": "rollup -c && rollup -c rollup.esm.config.js",
+    "build:amd": "tsc --downlevelIteration -p tsconfig-amd.json",
+    "build:tsc": "tsc --downlevelIteration -p tsconfig-es5.json & tsc --downlevelIteration -p tsconfig.json & npm run build:amd",
+    "debug": "npx ts-node tools/debug.ts",
+    "doc:build": "rm -rf ./src/.umi && dumi build",
+    "doc:deploy": "npm run doc:build && cp CNAME docs-dist/dist && gh-pages -d docs-dist/dist",
+    "lint": "eslint ./src/ ./test/",
+    "prepublishOnly": "npm run build",
+    "start": "dumi dev",
+    "test": "jest --coverage"
   },
-  "spm": {
-    "main": "lib/web-pinyin.js",
-    "devDependencies": {
-      "expect.js": "0.3.1",
-      "url": "1.2.0"
-    },
-    "build": {
-      "babel": {}
-    },
-    "tests": "tests/*-spec.js",
-    "dependencies": {
-      "object-assign": "~4.0.1"
-    }
-  },
-  "version": "2.9.1"
+  "version": "4.0.0-alpha.0"
 }
