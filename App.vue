@@ -83,19 +83,14 @@ export default {
 
 :root {
     --uni-tabbar-height: 50px;
-
-    /*app-plus header 和 tabbar 是原生的*/
-
-    /* #ifdef APP-PLUS */
     --uni-page-header-height: 0;
-    --page-full-height-without-header-and-tabbar: 100vh;
+    --page-full-height-without-header-and-tabbar: calc(100vh - 50px);
     --page-full-height-without-header: 100vh;
-    /* #endif */
-    /* #ifdef H5 */
-    --uni-page-header-height: 44px;
-    --page-full-height-without-header-and-tabbar: calc(100vh - 44px - 50px);
-    --page-full-height-without-header: calc(100vh - 44px);
-    /* #endif */
+    box-sizing: border-box;
+}
+
+view,scroll-view,swiper,swiper-item,movable-area,movable-view,cover-view,cover-image,icon,text,rich-text,progress,button,checkbox-group,checkbox,form,input,label,picker,picker-view,radio-group,radio,slider,switch,textarea,navigator,functional-page-navigator,image,video,camera,live-player,live-pusher,map,canvas,open-data,web-view,ad{
+    box-sizing: border-box;
 }
 
 </style>
