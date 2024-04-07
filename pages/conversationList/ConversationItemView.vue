@@ -9,15 +9,15 @@
             <view class="content-container">
                 <view class="title-time-container">
                     <h2 class="title single-line">{{ conversationTitle }}</h2>
-                    <p class="time">{{ conversationInfo._timeStr }}</p>
+                    <text class="time">{{ conversationInfo._timeStr }}</text>
                 </view>
                 <view class="content">
-                    <p class="draft single-line" v-if="shouldShowDraft" v-html="draft"></p>
-                    <p class="last-message-desc single-line" v-else>
-                        <i v-if="unreadMention > 0">[有人@我]</i>
+                    <text class="draft single-line" v-if="shouldShowDraft" v-html="draft"></text>
+                    <text class="last-message-desc single-line" v-else>
+                        <view v-if="unreadMention > 0">[有人@我]</view>
                         {{ lastMessageContent }}
-                    </p>
-                    <i v-if="conversationInfo.isSilent" class="icon-ion-android-notifications-off"></i>
+                    </text>
+                    <view v-if="conversationInfo.isSilent" class="icon-ion-android-notifications-off"></view>
                 </view>
             </view>
         </view>
@@ -170,7 +170,7 @@ export default {
     font-style: normal;
     text-align: center;
     right: 8px;
-    top: 20px;
+    top: 8px;
 }
 
 .header .badge.silent {
@@ -233,7 +233,7 @@ export default {
     font-size: 13px;
 }
 
-.content .last-message-desc i {
+.content .last-message-desc view {
     font-style: normal;
     color: red;
 }
