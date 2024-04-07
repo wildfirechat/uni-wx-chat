@@ -15,7 +15,7 @@
                         $t('friend_request.accepted')
                     }}</span>
                 <button v-else-if="friendRequest.status === 0" class="accept" size="mini"
-                        @click="accept(friendRequest)">{{
+                        @click.stop="accept(friendRequest)">{{
                         $t('common.add')
                     }}
                 </button>
