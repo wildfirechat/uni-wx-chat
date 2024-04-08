@@ -1,0 +1,87 @@
+@font-face {
+    font-family: 'icomoon';
+    src: url('/static/iconfonts/wf-icomoon.ttf') format('truetype');
+}
+
+[class^="icon-"], [class*=" icon-"] {
+    /* use !important to prevent issues with browser extensions that change iconfonts */
+    font-family: 'icomoon' !important;
+    speak: none;
+    font-style: normal;
+    font-weight: normal;
+    font-variant: normal;
+    text-transform: none;
+    line-height: 1;
+
+    /* Better Font Rendering =========== */
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+.icon-ion-ios-search:before {
+    content: "\f4a5";
+}
+
+.icon-ion-close:before {
+    content: "\f12a";
+}
+
+.icon-ion-forward:before {
+    content: "\f13a";
+}
+
+.icon-ion-ios-arrow-right:before {
+    content: "\f3d3";
+}
+
+.icon-ion-quote:before {
+    content: "\f347";
+}
+
+.icon-ion-android-favorite:before {
+    content: "\f388";
+}
+
+.icon-ion-android-delete:before {
+    content: "\f37f";
+}
+
+.icon-ion-close-circled:before {
+    content: "\f128";
+}
+
+.icon-ion-android-volume-up:before {
+    content: "\f3ba";
+}
+
+.icon-ion-pause:before {
+    content: "\f210";
+}
+
+.icon-ion-android-call:before {
+    content: "\f2d2";
+}
+
+.icon-ion-android-notifications-off:before {
+    content: "\f39a";
+}
+
+.icon-ion-android-attach:before {
+    content: "\f367";
+}
+
+.icon-ion-ios-shuffle:before {
+    content: "\f4a9";
+}
+
+.icon-ion-ios-chatboxes:before {
+    content: "\f3fa";
+}
+
+.icon-ion-person-add:before {
+    content: "\f211";
+}
+
+
+
+

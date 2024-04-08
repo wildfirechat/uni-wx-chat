@@ -8,7 +8,7 @@
             </view>
             <view class="content-container">
                 <view class="title-time-container">
-                    <h2 class="title single-line">{{ conversationTitle }}</h2>
+                    <view class="title single-line">{{ conversationTitle }}</view>
                     <text class="time">{{ conversationInfo._timeStr }}</text>
                 </view>
                 <view class="content">
@@ -17,7 +17,7 @@
                         <view v-if="unreadMention > 0">[有人@我]</view>
                         {{ lastMessageContent }}
                     </text>
-                    <view v-if="conversationInfo.isSilent" class="icon-ion-android-notifications-off"></view>
+                    <text v-if="conversationInfo.isSilent" class="icon-ion-android-notifications-off"></text>
                 </view>
             </view>
         </view>
